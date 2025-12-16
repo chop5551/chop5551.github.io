@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Для тебя</title>
+  <style>
+    :root{
+      --pink1:#ff5aa5;
+      --pink2:#ff87c2;
+      --bg1:#fff0f7;
+      --bg2:#ffe3f1;
+      --card:#ffffffcc;
+      --text:#3b1d2a;
+    }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue";
+      background: radial-gradient(1200px 700px at 20% 10%, var(--bg1), transparent 60%),
+                  radial-gradient(900px 600px at 80% 30%, var(--bg2), transparent 55%),
+                  linear-gradient(180deg, #fff, #fff6fb);
+      color: var(--text);
+      min-height: 100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      box-sizing: border-box;
+    }
+    .card{
+      width: min(760px, 96vw);
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      border: 1px solid #ffd0e6;
+      border-radius: 28px;
+      box-shadow: 0 20px 80px rgba(255, 90, 165, 0.18);
+      overflow:hidden;
+    }
+    .top{
+      padding: 26px 22px 14px;
+      text-align:center;
+    }
+    h1{
+      margin:0 0 10px;
+      font-size: clamp(22px, 3.2vw, 34px);
+      letter-spacing: 0.2px;
+    }
+    .hint{
+      margin:0;
+      opacity: .85;
+      font-size: 15px;
+    }
+
+    .actions{
+      width: 100%;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding: 16px 22px 22px;
+      box-sizing: border-box;
+    }
+
+    button{
+      cursor:pointer;
+      border:0;
+      padding: 14px 20px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 16px;
+      color: white;
+      background: linear-gradient(135deg, var(--pink1), var(--pink2));
+      box-shadow: 0 12px 30px rgba(255, 90, 165, 0.35);
+      transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+      display: block;
+      margin: 0 auto;
+    }
+    button:hover{
+      transform: translateY(-1px);
+      filter: brightness(1.02);
+      box-shadow: 0 16px 40px rgba(255, 90, 165, 0.42);
+    }
+    button:active{
+      transform: translateY(0px) scale(0.99);
+    }
+
+    .content{
+      padding: 0 22px 18px;
+      display:none;
+      animation: pop .35s ease-out;
+    }
+    @keyframes pop{
+      from{ transform: translateY(6px); opacity: 0; }
+      to{ transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes fadeUp{
+      from{ opacity:0; transform: translateY(8px); }
+      to{ opacity:1; transform: translateY(0); }
+    }
+    .animate{
+      animation: fadeUp .45s ease-out;
+    }
+
+    .caption{
+      margin: 0 0 12px;
+      text-align:center;
+      font-weight: 800;
+      font-size: clamp(18px, 3vw, 30px);
+      color: var(--pink1);
+      text-shadow: 0 8px 30px rgba(255, 90, 165, 0.25);
+    }
+
+    /* Главный момент: картинка "вписывается", чтобы оставалось место под кнопку */
+    .photo{
+      width: 100%;
+      max-height: 52vh;          /* чтобы на мобилке помещалась кнопка */
+      object-fit: contain;       /* НЕ обрезаем, а вписываем */
+      border-radius: 22px;
+      border: 1px solid #ffd0e6;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.08);
+      display:block;
+      background: rgba(255,255,255,0.55);
+    }
+
+    .footer{
+      padding: 0 22px 18px;
+      text-align:center;
+      font-size: 12px;
+      opacity: .6;
+    }
+
+    @media (max-width: 420px){
+      .photo{ max-height: 46vh; }
+      button{ width: min(320px, 100%); }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="top">
+      <h1>Маленький секрет</h1>
+      <p class="hint">Нажми кнопку — и появится самое главное.</p>
+    </div>
+
+    <div class="actions" id="actionsStart">
+      <button id="btnStart">Если мышка то нажми</button>
+    </div>
+
+    <div class="content" id="screen">
+      <div class="caption" id="caption"></div>
+      <img class="photo" id="photo" src="" alt="Фото" />
+
+      <div class="actions" id="actionsInScreen" style="padding:16px 22px 0;">
+        <button id="btnNext">Ещё раз</button>
+      </div>
+    </div>
+
+    <div class="footer">Сделано с нежностью</div>
+  </div>
+
+  <script>
+    // 1) Фото: предполагаем файлы img/1.jpg ... img/40.jpg
+    // Если у тебя другие имена/форматы — напиши, и сделаем массив вручную.
+    const IMAGES = Array.from({ length: 40 }, (_, i) => `./img/${i + 1}.jpg`);
+
+    // 2) Текст: 3 группы слов
+    const W1 = ["Яночка", "Мышка", "Зайка", "Котик", "Зубастик", "Зубик", "Зубочистка", "Мышеловка"];
+    const W2 = ["люблю", "целую", "обнимаю", "ценю", "благодарю", "уважаю"];
+    const W3 = ["сильно", "нежно", "безгранично", "всей душой"];
+
+    const actionsStart = document.getElementById("actionsStart");
+    const screen = document.getElementById("screen");
+
+    const btnStart = document.getElementById("btnStart");
+    const btnNext  = document.getElementById("btnNext");
+
+    const caption = document.getElementById("caption");
+    const photo   = document.getElementById("photo");
+
+    function show(el){ el.style.display = "block"; }
+    function hide(el){ el.style.display = "none"; }
+
+    function pick(arr){
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function restartCaptionAnimation(){
+      caption.classList.remove("animate");
+      void caption.offsetWidth;
+      caption.classList.add("animate");
+    }
+
+    function generate(){
+      const phrase = `${pick(W1)} ${pick(W2)} ${pick(W3)}`;
+      caption.textContent = phrase;
+
+      const img = pick(IMAGES);
+      // небольшой анти-кэш, чтобы браузер охотнее перерисовывал при повторных кликах
+      photo.src = img + `?v=${Date.now()}`;
+
+      restartCaptionAnimation();
+    }
+
+    function goHome(){
+      hide(screen);
+      show(actionsStart);
+      caption.textContent = "";
+      photo.src = "";
+    }
+
+    btnStart.addEventListener("click", () => {
+      hide(actionsStart);
+      show(screen);
+      generate(); // первый раз: сразу рандом фото + фраза
+    });
+
+    btnNext.addEventListener("click", () => {
+      generate(); // каждый раз заново генерим
+    });
+
+    goHome();
+  </script>
+</body>
+</html>
