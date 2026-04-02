@@ -14,13 +14,20 @@
       --card:#ffffffcc;
       --text:#3b1d2a;
       --danger:#ff3b7a;
+      --border:#ffd0e6;
+      --shadow:0 20px 80px rgba(255, 90, 165, 0.18);
+      --shadow-strong:0 26px 90px rgba(255, 90, 165, 0.28);
     }
 
     *{ box-sizing: border-box; }
 
-    body{
+    html, body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue";
+      padding:0;
+    }
+
+    body{
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
       background:
         radial-gradient(1200px 700px at 20% 10%, var(--bg1), transparent 60%),
         radial-gradient(900px 600px at 80% 30%, var(--bg2), transparent 55%),
@@ -33,14 +40,18 @@
       padding: 18px;
     }
 
+    button, input, select, textarea{
+      font: inherit;
+    }
+
     .card{
       position: relative;
       width: min(760px, 96vw);
       background: var(--card);
       backdrop-filter: blur(10px);
-      border: 1px solid #ffd0e6;
+      border: 1px solid var(--border);
       border-radius: 28px;
-      box-shadow: 0 20px 80px rgba(255, 90, 165, 0.18);
+      box-shadow: var(--shadow);
       overflow:hidden;
     }
 
@@ -208,19 +219,33 @@
       padding: 16px 22px 22px;
     }
 
-    button.main-btn{
+    .actions-row{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    button.main-btn,
+    button.calendar-btn{
       cursor:pointer;
       border:0;
       padding: 14px 20px;
       border-radius: 999px;
       font-weight: 700;
       font-size: 16px;
+      transition: transform .12s ease, box-shadow .12s ease, filter .12s ease, border-color .12s ease;
+      display: inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+    }
+
+    button.main-btn{
       color: white;
       background: linear-gradient(135deg, var(--pink1), var(--pink2));
       box-shadow: 0 12px 30px rgba(255, 90, 165, 0.35);
-      transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
-      display: block;
-      margin: 0 auto;
     }
 
     button.main-btn:hover{
@@ -233,10 +258,223 @@
       transform: translateY(0px) scale(0.99);
     }
 
+    button.calendar-btn{
+      color: var(--text);
+      border:1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,238,246,.95));
+      box-shadow: 0 10px 24px rgba(255, 90, 165, 0.12);
+    }
+
+    button.calendar-btn:hover{
+      transform: translateY(-1px);
+      border-color:#ffb8d9;
+      box-shadow: 0 14px 30px rgba(255, 90, 165, 0.16);
+    }
+
+    button.calendar-btn:active{
+      transform: scale(.99);
+    }
+
     .content{
       padding: 0 22px 18px;
       display:none;
       animation: pop .35s ease-out;
+    }
+
+    .animate{
+      animation: fadeUp .45s ease-out;
+    }
+
+    .caption{
+      margin: 0 0 12px;
+      text-align:center;
+      font-weight: 800;
+      font-size: clamp(18px, 3vw, 30px);
+      color: var(--pink1);
+      text-shadow: 0 8px 30px rgba(255, 90, 165, 0.25);
+    }
+
+    .photo{
+      width: 100%;
+      max-height: 52vh;
+      object-fit: contain;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.08);
+      display:block;
+      background: rgba(255,255,255,0.55);
+    }
+
+    .footer{
+      padding: 0 22px 18px;
+      text-align:center;
+      font-size: 12px;
+      opacity: .6;
+    }
+
+    .modal{
+      position:fixed;
+      inset:0;
+      display:none;
+      z-index:1000;
+    }
+
+    .modal.show{
+      display:block;
+    }
+
+    .modal-backdrop{
+      position:absolute;
+      inset:0;
+      background: rgba(29, 10, 20, .45);
+      backdrop-filter: blur(8px);
+      animation: fadeIn .2s ease-out;
+    }
+
+    .modal-panel{
+      position:relative;
+      width:min(920px, calc(100vw - 24px));
+      max-height:min(86vh, 760px);
+      overflow:auto;
+      margin: 4vh auto;
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,245,250,.98));
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-strong);
+      padding: 22px;
+      animation: modalUp .24s ease-out;
+    }
+
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:16px;
+  margin-bottom:18px;
+  flex: 0 0 auto;
+}
+
+    .modal-kicker{
+      margin:0 0 4px;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.16em;
+      opacity:.65;
+    }
+
+    .modal-title{
+      margin:0;
+      font-size: clamp(22px, 3vw, 32px);
+      color: var(--pink1);
+      line-height:1.15;
+    }
+
+    .modal-subtitle{
+      margin:8px 0 0;
+      font-size:14px;
+      opacity:.75;
+    }
+
+    .modal-close{
+      width:44px;
+      height:44px;
+      border-radius:50%;
+      border:1px solid var(--border);
+      background:#fff;
+      font-size:26px;
+      line-height:1;
+      cursor:pointer;
+      color: var(--text);
+      box-shadow: 0 6px 18px rgba(255, 90, 165, 0.08);
+    }
+
+.weekday-grid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap:10px;
+  margin-bottom:18px;
+  flex: 0 0 auto;
+}
+
+    .weekday-btn{
+      border:1px solid var(--border);
+      background: #fff;
+      border-radius: 18px;
+      padding: 14px 16px;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      cursor:pointer;
+      text-align:left;
+      transition: transform .12s ease, box-shadow .12s ease, background .12s ease, color .12s ease;
+    }
+
+    .weekday-btn:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(255, 90, 165, 0.12);
+    }
+
+    .weekday-btn.active{
+      background: linear-gradient(135deg, var(--pink1), var(--pink2));
+      color:#fff;
+      border-color: transparent;
+    }
+
+.calendar-preview{
+  min-height: 0;
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  background:
+    radial-gradient(700px 260px at 50% 0%, rgba(255, 90, 165, 0.10), transparent 60%),
+    linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,240,247,.95));
+  overflow: hidden;
+  padding: 16px;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap: 12px;
+}
+
+.calendar-preview-inner{
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  animation: fadeUp .25s ease-out;
+}
+
+.calendar-day-title{
+  text-align:center;
+  margin: 0;
+  font-size: clamp(18px, 2.4vw, 26px);
+  font-weight: 800;
+  color: var(--pink1);
+  flex: 0 0 auto;
+}
+
+.calendar-image{
+  width: 300px;
+  height: 300px;
+  max-width: 300px;
+  max-height: 300px;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 18px;
+  border:1px solid #ffd8ea;
+  box-shadow: 0 14px 40px rgba(255, 90, 165, 0.14);
+  background:#fff;
+  display:block;
+}
+
+    .preview-empty{
+      font-size: 16px;
+      opacity:.7;
+      text-align:center;
+      max-width: 32ch;
     }
 
     @keyframes pop{
@@ -247,6 +485,16 @@
     @keyframes fadeUp{
       from{ opacity:0; transform: translateY(8px); }
       to{ opacity:1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn{
+      from{ opacity:0; }
+      to{ opacity:1; }
+    }
+
+    @keyframes modalUp{
+      from{ opacity:0; transform: translateY(12px) scale(.985); }
+      to{ opacity:1; transform: translateY(0) scale(1); }
     }
 
     @keyframes toastIn{
@@ -285,51 +533,55 @@
       50%{ transform: translateY(-2px); opacity: .9; }
     }
 
-    .animate{
-      animation: fadeUp .45s ease-out;
-    }
+    @media (max-width: 640px){
+      .weekday-grid{
+        grid-template-columns: 1fr;
+      }
 
-    .caption{
-      margin: 0 0 12px;
-      text-align:center;
-      font-weight: 800;
-      font-size: clamp(18px, 3vw, 30px);
-      color: var(--pink1);
-      text-shadow: 0 8px 30px rgba(255, 90, 165, 0.25);
-    }
+.modal-panel{
+  position: relative;
+  width: min(920px, calc(100vw - 24px));
+  height: min(88vh, 760px);
+  margin: 3vh auto;
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,245,250,.98));
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-strong);
+  padding: 18px;
+  animation: modalUp .24s ease-out;
+  overflow: hidden;
 
-    .photo{
-      width: 100%;
-      max-height: 52vh;
-      object-fit: contain;
-      border-radius: 22px;
-      border: 1px solid #ffd0e6;
-      box-shadow: 0 14px 40px rgba(0,0,0,0.08);
-      display:block;
-      background: rgba(255,255,255,0.55);
-    }
-
-    .footer{
-      padding: 0 22px 18px;
-      text-align:center;
-      font-size: 12px;
-      opacity: .6;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: 12px;
+}
     }
 
     @media (max-width: 420px){
       .photo{ max-height: 46vh; }
-      button.main-btn{ width: min(320px, 100%); }
+
+      button.main-btn,
+      button.calendar-btn{
+        width: min(320px, 100%);
+      }
+
       .notify-btn{
         width:58px;
         height:58px;
       }
+
       .badge{
         min-width:22px;
         height:22px;
         font-size:12px;
       }
+
       .love-text{
         font-size: 17px;
+      }
+
+      .actions-row{
+        gap:10px;
       }
     }
   </style>
@@ -357,7 +609,7 @@
 
     <div class="top">
       <h1>Маленький секрет</h1>
-      <p class="hint">Нажми на колокольчик сверху или на кнопку ниже 💖</p>
+      <p class="hint">Нажми на колокольчик сверху, на кнопку ниже или открой календарь 💖</p>
     </div>
 
     <div class="love-toast" id="loveToast">
@@ -369,8 +621,9 @@
       <div class="love-emoji">💖 💘 💝 💕 💞 🌷 ✨ 🥰</div>
     </div>
 
-    <div class="actions" id="actionsStart">
-      <button class="main-btn" id="btnStart">Если мышка то нажми</button>
+    <div class="actions actions-row" id="actionsStart">
+      <button class="main-btn" id="btnStart" type="button">Если мышка то нажми</button>
+      <button class="calendar-btn" id="btnCalendar" type="button">📅 Календарь</button>
     </div>
 
     <div class="content" id="screen">
@@ -378,11 +631,32 @@
       <img class="photo" id="photo" src="" alt="Фото" />
 
       <div class="actions" id="actionsInScreen" style="padding:16px 22px 0;">
-        <button class="main-btn" id="btnNext">Ещё раз</button>
+        <button class="main-btn" id="btnNext" type="button">Ещё раз</button>
       </div>
     </div>
 
     <div class="footer">Сделано с нежностью</div>
+  </div>
+
+  <div class="modal" id="calendarModal" aria-hidden="true">
+    <div class="modal-backdrop" id="calendarBackdrop"></div>
+
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="calendarTitle">
+      <div class="modal-head">
+        <div>
+          <p class="modal-kicker">Календарь</p>
+          <h2 class="modal-title" id="calendarTitle">Выбери день недели</h2>
+          <p class="modal-subtitle">После выбора покажется случайная фотография этого дня</p>
+        </div>
+        <button class="modal-close" id="calendarClose" type="button" aria-label="Закрыть окно">×</button>
+      </div>
+
+      <div class="weekday-grid" id="weekdayGrid"></div>
+
+      <div class="calendar-preview" id="calendarPreview">
+        <div class="preview-empty">Выбери день недели, и здесь появится красивая фотография</div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -392,11 +666,29 @@
     const W2 = ["люблю", "целую", "обнимаю", "ценю", "люблю", "люблю", "благодарю", "уважаю"];
     const W3 = ["сильно", "нежно", "безгранично", "всей душой", "твой ослик"];
 
+    const CALENDAR_FILES = [
+      "./calendar/понедельник.png",
+      "./calendar/вторник.png",
+      "./calendar/вторник_2.png",
+      "./calendar/пятница.png"
+    ];
+
+    const WEEKDAYS_ORDER = [
+      "понедельник",
+      "вторник",
+      "среда",
+      "четверг",
+      "пятница",
+      "суббота",
+      "воскресенье"
+    ];
+
     const actionsStart = document.getElementById("actionsStart");
     const screen = document.getElementById("screen");
 
     const btnStart = document.getElementById("btnStart");
     const btnNext  = document.getElementById("btnNext");
+    const btnCalendar = document.getElementById("btnCalendar");
 
     const caption = document.getElementById("caption");
     const photo   = document.getElementById("photo");
@@ -404,6 +696,12 @@
     const notifyBell  = document.getElementById("notifyBell");
     const notifyBadge = document.getElementById("notifyBadge");
     const loveToast   = document.getElementById("loveToast");
+
+    const calendarModal = document.getElementById("calendarModal");
+    const calendarBackdrop = document.getElementById("calendarBackdrop");
+    const calendarClose = document.getElementById("calendarClose");
+    const weekdayGrid = document.getElementById("weekdayGrid");
+    const calendarPreview = document.getElementById("calendarPreview");
 
     let notificationOpened = false;
 
@@ -439,11 +737,98 @@
 
     function openLoveNotification(){
       if (notificationOpened) return;
-
       notificationOpened = true;
       notifyBadge.classList.add("hide");
       notifyBell.classList.remove("ringing");
       loveToast.classList.add("show");
+    }
+
+    function normalizeFileName(path){
+      const fileName = decodeURIComponent(path.split("/").pop() || "").toLowerCase();
+      return fileName.replace(/\.(png|jpg|jpeg|webp)$/i, "");
+    }
+
+    function extractDayPrefix(path){
+      const name = normalizeFileName(path);
+      const beforeDash = name.split("-")[0];
+      const beforeUnderscore = beforeDash.split("_")[0];
+      return beforeUnderscore.trim();
+    }
+
+    function buildCalendarMap(files){
+      const map = {};
+
+      files.forEach(path => {
+        const day = extractDayPrefix(path);
+        if (!day) return;
+
+        if (!map[day]) map[day] = [];
+        map[day].push(path);
+      });
+
+      return map;
+    }
+
+    const calendarMap = buildCalendarMap(CALENDAR_FILES);
+
+    function getExistingWeekdays(){
+      const existing = WEEKDAYS_ORDER.filter(day => Array.isArray(calendarMap[day]) && calendarMap[day].length > 0);
+
+      return existing.length ? existing : Object.keys(calendarMap);
+    }
+
+    function renderCalendarPreview(day){
+      const files = calendarMap[day] || [];
+
+      if (!files.length){
+        calendarPreview.innerHTML = '<div class="preview-empty">Для этого дня пока нет фото</div>';
+        return;
+      }
+
+      const selected = pick(files);
+
+      calendarPreview.innerHTML = `
+        <div class="calendar-preview-inner">
+          <div class="calendar-day-title">${day}</div>
+          <img
+            class="calendar-image"
+            src="${selected}?v=${Date.now()}"
+            alt="Фото для дня недели: ${day}"
+            loading="lazy"
+          />
+        </div>
+      `;
+    }
+
+    function renderWeekdays(){
+      const days = getExistingWeekdays();
+
+      weekdayGrid.innerHTML = days.map(day => `
+        <button class="weekday-btn" data-day="${day}" type="button">${day}</button>
+      `).join("");
+
+      const buttons = weekdayGrid.querySelectorAll(".weekday-btn");
+
+      buttons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          const day = btn.dataset.day;
+
+          buttons.forEach(item => item.classList.remove("active"));
+          btn.classList.add("active");
+
+          renderCalendarPreview(day);
+        });
+      });
+    }
+
+    function openCalendar(){
+      calendarModal.classList.add("show");
+      calendarModal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeCalendar(){
+      calendarModal.classList.remove("show");
+      calendarModal.setAttribute("aria-hidden", "true");
     }
 
     notifyBell.addEventListener("click", openLoveNotification);
@@ -458,6 +843,17 @@
       generate();
     });
 
+    btnCalendar.addEventListener("click", openCalendar);
+    calendarBackdrop.addEventListener("click", closeCalendar);
+    calendarClose.addEventListener("click", closeCalendar);
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && calendarModal.classList.contains("show")) {
+        closeCalendar();
+      }
+    });
+
+    renderWeekdays();
     goHome();
   </script>
 </body>
