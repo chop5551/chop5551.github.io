@@ -228,7 +228,8 @@
     }
 
     button.main-btn,
-    button.calendar-btn{
+    button.calendar-btn,
+    button.surprise-btn{
       cursor:pointer;
       border:0;
       padding: 14px 20px;
@@ -273,6 +274,24 @@
 
     button.calendar-btn:active{
       transform: scale(.99);
+    }
+
+    button.surprise-btn{
+      color: white;
+      background: linear-gradient(135deg, #a855f7, #d946ef);
+      box-shadow: 0 12px 30px rgba(217, 70, 239, 0.35);
+      flex-basis: 100%; /* Чтобы кнопка сюрприза переносилась на новую строку, если нужно, или занимала доступное место */
+      max-width: 320px;
+    }
+
+    button.surprise-btn:hover{
+      transform: translateY(-1px);
+      filter: brightness(1.02);
+      box-shadow: 0 16px 40px rgba(217, 70, 239, 0.42);
+    }
+
+    button.surprise-btn:active{
+      transform: translateY(0px) scale(0.99);
     }
 
     .content{
@@ -345,14 +364,14 @@
       animation: modalUp .24s ease-out;
     }
 
-.modal-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:16px;
-  margin-bottom:18px;
-  flex: 0 0 auto;
-}
+    .modal-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:16px;
+      margin-bottom:18px;
+      flex: 0 0 auto;
+    }
 
     .modal-kicker{
       margin:0 0 4px;
@@ -388,13 +407,13 @@
       box-shadow: 0 6px 18px rgba(255, 90, 165, 0.08);
     }
 
-.weekday-grid{
-  display:grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap:10px;
-  margin-bottom:18px;
-  flex: 0 0 auto;
-}
+    .weekday-grid{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap:10px;
+      margin-bottom:18px;
+      flex: 0 0 auto;
+    }
 
     .weekday-btn{
       border:1px solid var(--border);
@@ -420,55 +439,55 @@
       border-color: transparent;
     }
 
-.calendar-preview{
-  min-height: 0;
-  border-radius: 24px;
-  border: 1px solid var(--border);
-  background:
-    radial-gradient(700px 260px at 50% 0%, rgba(255, 90, 165, 0.10), transparent 60%),
-    linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,240,247,.95));
-  overflow: hidden;
-  padding: 16px;
+    .calendar-preview{
+      min-height: 0;
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      background:
+        radial-gradient(700px 260px at 50% 0%, rgba(255, 90, 165, 0.10), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,240,247,.95));
+      overflow: hidden;
+      padding: 16px;
 
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap: 12px;
-}
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap: 12px;
+    }
 
-.calendar-preview-inner{
-  width:100%;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:12px;
-  animation: fadeUp .25s ease-out;
-}
+    .calendar-preview-inner{
+      width:100%;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+      animation: fadeUp .25s ease-out;
+    }
 
-.calendar-day-title{
-  text-align:center;
-  margin: 0;
-  font-size: clamp(18px, 2.4vw, 26px);
-  font-weight: 800;
-  color: var(--pink1);
-  flex: 0 0 auto;
-}
+    .calendar-day-title{
+      text-align:center;
+      margin: 0;
+      font-size: clamp(18px, 2.4vw, 26px);
+      font-weight: 800;
+      color: var(--pink1);
+      flex: 0 0 auto;
+    }
 
-.calendar-image{
-  width: 300px;
-  height: 300px;
-  max-width: 300px;
-  max-height: 300px;
-  object-fit: contain;
-  object-position: center;
-  border-radius: 18px;
-  border:1px solid #ffd8ea;
-  box-shadow: 0 14px 40px rgba(255, 90, 165, 0.14);
-  background:#fff;
-  display:block;
-}
+    .calendar-image, .surprise-image-element{
+      width: 100%;
+      max-width: 400px;
+      max-height: 400px;
+      object-fit: contain;
+      object-position: center;
+      border-radius: 18px;
+      border:1px solid #ffd8ea;
+      box-shadow: 0 14px 40px rgba(255, 90, 165, 0.14);
+      background:#fff;
+      display:block;
+      margin: 0 auto;
+    }
 
     .preview-empty{
       font-size: 16px;
@@ -538,30 +557,36 @@
         grid-template-columns: 1fr;
       }
 
-.modal-panel{
-  position: relative;
-  width: min(920px, calc(100vw - 24px));
-  height: min(88vh, 760px);
-  margin: 3vh auto;
-  border-radius: 28px;
-  background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,245,250,.98));
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-strong);
-  padding: 18px;
-  animation: modalUp .24s ease-out;
-  overflow: hidden;
+      .modal-panel{
+        position: relative;
+        width: min(920px, calc(100vw - 24px));
+        height: min(88vh, 760px);
+        margin: 3vh auto;
+        border-radius: 28px;
+        background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,245,250,.98));
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-strong);
+        padding: 18px;
+        animation: modalUp .24s ease-out;
+        overflow: hidden;
 
-  display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr);
-  gap: 12px;
-}
+        display: grid;
+        grid-template-rows: auto auto minmax(0, 1fr);
+        gap: 12px;
+      }
+      
+      .surprise-modal-panel {
+        display: block; /* Переопределяем grid для модалки сюрприза */
+        height: auto;
+      }
     }
 
     @media (max-width: 420px){
       .photo{ max-height: 46vh; }
 
       button.main-btn,
-      button.calendar-btn{
+      button.calendar-btn,
+      button.surprise-btn{
         width: min(320px, 100%);
       }
 
@@ -624,6 +649,7 @@
     <div class="actions actions-row" id="actionsStart">
       <button class="main-btn" id="btnStart" type="button">Если мышка то нажми</button>
       <button class="calendar-btn" id="btnCalendar" type="button">📅 Календарь</button>
+      <button class="surprise-btn" id="btnSurprise" type="button">🎁 Выбери сюрприз</button>
     </div>
 
     <div class="content" id="screen">
@@ -638,6 +664,7 @@
     <div class="footer">Сделано с нежностью</div>
   </div>
 
+  <!-- Модальное окно Календаря -->
   <div class="modal" id="calendarModal" aria-hidden="true">
     <div class="modal-backdrop" id="calendarBackdrop"></div>
 
@@ -659,8 +686,31 @@
     </div>
   </div>
 
+  <!-- Новое Модальное окно Сюрприза -->
+  <div class="modal" id="surpriseModal" aria-hidden="true">
+    <div class="modal-backdrop" id="surpriseBackdrop"></div>
+
+    <div class="modal-panel surprise-modal-panel" role="dialog" aria-modal="true">
+      <div class="modal-head">
+        <div>
+          <p class="modal-kicker">Особый момент</p>
+          <h2 class="modal-title" style="color: #d946ef;">Твой сюрприз!</h2>
+        </div>
+        <button class="modal-close" id="surpriseClose" type="button" aria-label="Закрыть окно">×</button>
+      </div>
+      
+      <div style="padding-top: 10px;">
+        <img class="surprise-image-element" id="surpriseImage" src="" alt="Сюрприз из gusto" />
+      </div>
+    </div>
+  </div>
+
   <script>
     const IMAGES = Array.from({ length: 40 }, (_, i) => `./img/${i + 1}.jpg`);
+    
+    // Массив картинок для сюрприза (предполагаем, что в папке gusto есть файлы от 1.jpg до 10.jpg)
+    // Измените число 10 на нужное количество файлов в вашей папке
+    const GUSTO_IMAGES = Array.from({ length: 10 }, (_, i) => `./gusto/${i + 1}.jpg`);
 
     const W1 = ["Яночка", "Яночка", "Яночка", "Мышка", "Мышка пушистая", "Зайка", "Котик", "Зубастик", "Зубик", "Зубочистка", "Мышеловка", "Крошечка", "Красавица моя", "Принцесса"];
     const W2 = ["люблю", "целую", "обнимаю", "ценю", "люблю", "люблю", "благодарю", "уважаю"];
@@ -694,6 +744,7 @@
     const btnStart = document.getElementById("btnStart");
     const btnNext  = document.getElementById("btnNext");
     const btnCalendar = document.getElementById("btnCalendar");
+    const btnSurprise = document.getElementById("btnSurprise");
 
     const caption = document.getElementById("caption");
     const photo   = document.getElementById("photo");
@@ -707,6 +758,11 @@
     const calendarClose = document.getElementById("calendarClose");
     const weekdayGrid = document.getElementById("weekdayGrid");
     const calendarPreview = document.getElementById("calendarPreview");
+
+    const surpriseModal = document.getElementById("surpriseModal");
+    const surpriseBackdrop = document.getElementById("surpriseBackdrop");
+    const surpriseClose = document.getElementById("surpriseClose");
+    const surpriseImage = document.getElementById("surpriseImage");
 
     let notificationOpened = false;
 
@@ -778,7 +834,6 @@
 
     function getExistingWeekdays(){
       const existing = WEEKDAYS_ORDER.filter(day => Array.isArray(calendarMap[day]) && calendarMap[day].length > 0);
-
       return existing.length ? existing : Object.keys(calendarMap);
     }
 
@@ -836,6 +891,17 @@
       calendarModal.setAttribute("aria-hidden", "true");
     }
 
+    function openSurprise(){
+      surpriseImage.src = pick(GUSTO_IMAGES) + `?v=${Date.now()}`;
+      surpriseModal.classList.add("show");
+      surpriseModal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeSurprise(){
+      surpriseModal.classList.remove("show");
+      surpriseModal.setAttribute("aria-hidden", "true");
+    }
+
     notifyBell.addEventListener("click", openLoveNotification);
 
     btnStart.addEventListener("click", () => {
@@ -852,9 +918,14 @@
     calendarBackdrop.addEventListener("click", closeCalendar);
     calendarClose.addEventListener("click", closeCalendar);
 
+    btnSurprise.addEventListener("click", openSurprise);
+    surpriseBackdrop.addEventListener("click", closeSurprise);
+    surpriseClose.addEventListener("click", closeSurprise);
+
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && calendarModal.classList.contains("show")) {
-        closeCalendar();
+      if (e.key === "Escape") {
+        if (calendarModal.classList.contains("show")) closeCalendar();
+        if (surpriseModal.classList.contains("show")) closeSurprise();
       }
     });
 
