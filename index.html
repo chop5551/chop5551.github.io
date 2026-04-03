@@ -706,16 +706,11 @@
   </div>
 
   <script>
-    // Получаем пути ко всем .webp файлам в папке img
-    const imgModules = import.meta.glob('./img/*.webp', { eager: true });
-    // Object.values вернет модули, из которых мы извлекаем default (URL картинки)
-    const IMAGES = Object.values(imgModules).map(module => module.default);
-    
-    // Вручную перечисляем файлы для слайдера (как у вас было изначально)
-    const IMAGES = Array.from({ length: 40 }, (_, i) => `./img/${i + 1}.webp`);
-    
-    // Вручную перечисляем файлы для сюрприза
-    const GUSTO_IMAGES = Array.from({ length: 10 }, (_, i) => `./gusto/${i + 1}.webp`)
+  // Массив для картинок из папки img
+      const IMAGES = Array.from({ length: 40 }, (_, i) => `./img/${i + 1}.webp`);
+      
+      // Массив для сюрприза из папки gusto
+      const GUSTO_IMAGES = Array.from({ length: 10 }, (_, i) => `./gusto/${i + 1}.webp`);
 
     const W1 = ["Яночка", "Яночка", "Яночка", "Мышка", "Мышка пушистая", "Зайка", "Котик", "Зубастик", "Зубик", "Зубочистка", "Мышеловка", "Крошечка", "Красавица моя", "Принцесса"];
     const W2 = ["люблю", "целую", "обнимаю", "ценю", "люблю", "люблю", "благодарю", "уважаю"];
