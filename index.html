@@ -706,11 +706,14 @@
   </div>
 
   <script>
-    const IMAGES = Array.from({ length: 40 }, (_, i) => `./img/${i + 1}.jpg`);
+    // Получаем пути ко всем .webp файлам в папке img
+    const imgModules = import.meta.glob('./img/*.webp', { eager: true });
+    // Object.values вернет модули, из которых мы извлекаем default (URL картинки)
+    const IMAGES = Object.values(imgModules).map(module => module.default);
     
-    // Массив картинок для сюрприза (предполагаем, что в папке gusto есть файлы от 1.jpg до 10.jpg)
-    // Измените число 10 на нужное количество файлов в вашей папке
-    const GUSTO_IMAGES = Array.from({ length: 10 }, (_, i) => `./gusto/${i + 1}.jpg`);
+    // Аналогично для папки gusto
+    const gustoModules = import.meta.glob('./gusto/*.webp', { eager: true });
+    const GUSTO_IMAGES = Object.values(gustoModules).map(module => module.default);
 
     const W1 = ["Яночка", "Яночка", "Яночка", "Мышка", "Мышка пушистая", "Зайка", "Котик", "Зубастик", "Зубик", "Зубочистка", "Мышеловка", "Крошечка", "Красавица моя", "Принцесса"];
     const W2 = ["люблю", "целую", "обнимаю", "ценю", "люблю", "люблю", "благодарю", "уважаю"];
