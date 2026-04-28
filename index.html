@@ -38,6 +38,7 @@
       align-items:center;
       justify-content:center;
       padding: 18px;
+      overflow-x: hidden;
     }
 
     button, input, select, textarea{
@@ -229,7 +230,8 @@
 
     button.main-btn,
     button.calendar-btn,
-    button.surprise-btn{
+    button.surprise-btn,
+    button.rain-btn{
       cursor:pointer;
       border:0;
       padding: 14px 20px;
@@ -241,6 +243,7 @@
       align-items:center;
       justify-content:center;
       gap:10px;
+      min-height: 48px;
     }
 
     button.main-btn{
@@ -280,7 +283,7 @@
       color: white;
       background: linear-gradient(135deg, #a855f7, #d946ef);
       box-shadow: 0 12px 30px rgba(217, 70, 239, 0.35);
-      flex-basis: 100%; /* Чтобы кнопка сюрприза переносилась на новую строку, если нужно, или занимала доступное место */
+      flex-basis: 100%;
       max-width: 320px;
     }
 
@@ -292,6 +295,24 @@
 
     button.surprise-btn:active{
       transform: translateY(0px) scale(0.99);
+    }
+
+    button.rain-btn{
+      color: white;
+      background: linear-gradient(135deg, #ff8a5b, #ff5aa5);
+      box-shadow: 0 12px 30px rgba(255, 90, 165, 0.28);
+      flex-basis: 100%;
+      max-width: 320px;
+    }
+
+    button.rain-btn:hover{
+      transform: translateY(-1px);
+      filter: brightness(1.03);
+      box-shadow: 0 16px 40px rgba(255, 90, 165, 0.34);
+    }
+
+    button.rain-btn:active{
+      transform: translateY(0) scale(0.99);
     }
 
     .content{
@@ -448,7 +469,6 @@
         linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,240,247,.95));
       overflow: hidden;
       padding: 16px;
-
       display:flex;
       flex-direction:column;
       align-items:center;
@@ -496,6 +516,27 @@
       max-width: 32ch;
     }
 
+    .chihuahua-rain-layer{
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 9999;
+    }
+
+    .chihuahua-drop{
+      position: absolute;
+      top: -90px;
+      width: var(--size, 54px);
+      height: var(--size, 54px);
+      object-fit: contain;
+      user-select: none;
+      pointer-events: none;
+      filter: drop-shadow(0 10px 14px rgba(0,0,0,.14));
+      animation: chihuahuaFall linear forwards;
+      opacity: 0;
+    }
+
     @keyframes pop{
       from{ transform: translateY(6px); opacity: 0; }
       to{ transform: translateY(0); opacity: 1; }
@@ -533,23 +574,38 @@
     }
 
     @keyframes bellPulse{
-      0%{
-        opacity:.65;
-        transform:scale(.9);
-      }
-      70%{
-        opacity:0;
-        transform:scale(1.28);
-      }
-      100%{
-        opacity:0;
-        transform:scale(1.35);
-      }
+      0%{ opacity:.65; transform:scale(.9); }
+      70%{ opacity:0; transform:scale(1.28); }
+      100%{ opacity:0; transform:scale(1.35); }
     }
 
     @keyframes sparkle{
       0%,100%{ transform: translateY(0); opacity: 1; }
       50%{ transform: translateY(-2px); opacity: .9; }
+    }
+
+    @keyframes chihuahuaFall{
+      0%{
+        transform: translate3d(0, -90px, 0) rotate(0deg) scale(0.9);
+        opacity: 0;
+      }
+      10%{
+        opacity: 1;
+      }
+      100%{
+        transform: translate3d(var(--drift, 0px), 110vh, 0) rotate(var(--rotate, 180deg)) scale(1);
+        opacity: .96;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .notify-btn.ringing::before,
+      .notify-btn.ringing .bell-icon,
+      .love-emoji,
+      .chihuahua-drop{
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+      }
     }
 
     @media (max-width: 640px){
@@ -569,14 +625,13 @@
         padding: 18px;
         animation: modalUp .24s ease-out;
         overflow: hidden;
-
         display: grid;
         grid-template-rows: auto auto minmax(0, 1fr);
         gap: 12px;
       }
-      
+
       .surprise-modal-panel {
-        display: block; /* Переопределяем grid для модалки сюрприза */
+        display: block;
         height: auto;
       }
     }
@@ -586,7 +641,8 @@
 
       button.main-btn,
       button.calendar-btn,
-      button.surprise-btn{
+      button.surprise-btn,
+      button.rain-btn{
         width: min(320px, 100%);
       }
 
@@ -634,7 +690,7 @@
 
     <div class="top">
       <h1>Маленький секрет</h1>
-      <p class="hint">Нажми на колокольчик сверху, на кнопку ниже или открой календарь 💖</p>
+      <p class="hint">Нажми на колокольчик сверху, на кнопку ниже, открой календарь или запусти дождик из чихуахуа 💖</p>
     </div>
 
     <div class="love-toast" id="loveToast">
@@ -650,21 +706,22 @@
       <button class="main-btn" id="btnStart" type="button">Если мышка то нажми</button>
       <button class="calendar-btn" id="btnCalendar" type="button">📅 Календарь</button>
       <button class="surprise-btn" id="btnSurprise" type="button">🎁 Выбери сюрприз</button>
+      <button class="rain-btn" id="btnChihuahuaRain" type="button">🐶 Чихуахуа-дождик</button>
     </div>
 
     <div class="content" id="screen">
       <div class="caption" id="caption"></div>
       <img class="photo" id="photo" src="" alt="Фото" />
 
-      <div class="actions" id="actionsInScreen" style="padding:16px 22px 0;">
+      <div class="actions actions-row" id="actionsInScreen" style="padding:16px 22px 0;">
         <button class="main-btn" id="btnNext" type="button">Ещё раз</button>
+        <button class="rain-btn" id="btnChihuahuaRainInside" type="button">🐶 Чихуахуа-дождик</button>
       </div>
     </div>
 
     <div class="footer">Сделано с нежностью</div>
   </div>
 
-  <!-- Модальное окно Календаря -->
   <div class="modal" id="calendarModal" aria-hidden="true">
     <div class="modal-backdrop" id="calendarBackdrop"></div>
 
@@ -686,7 +743,6 @@
     </div>
   </div>
 
-  <!-- Новое Модальное окно Сюрприза -->
   <div class="modal" id="surpriseModal" aria-hidden="true">
     <div class="modal-backdrop" id="surpriseBackdrop"></div>
 
@@ -698,7 +754,7 @@
         </div>
         <button class="modal-close" id="surpriseClose" type="button" aria-label="Закрыть окно">×</button>
       </div>
-      
+
       <div style="padding-top: 10px;">
         <img class="surprise-image-element" id="surpriseImage" src="" alt="Сюрприз из gusto" />
       </div>
@@ -706,11 +762,9 @@
   </div>
 
   <script>
-  // Массив для картинок из папки img
-      const IMAGES = Array.from({ length: 40 }, (_, i) => `./img/${i + 1}.jpg`);
-      
-      // Массив для сюрприза из папки gusto
-      const GUSTO_IMAGES = Array.from({ length: 4 }, (_, i) => `./gusto/${i + 1}.webp`);
+    const IMAGES = Array.from({ length: 40 }, (_, i) => `./img/${i + 1}.jpg`);
+    const GUSTO_IMAGES = Array.from({ length: 4 }, (_, i) => `./gusto/${i + 1}.webp`);
+    const CHIHUAHUA_IMAGES = Array.from({ length: 8 }, (_, i) => `./chi/${i + 1}.png`);
 
     const W1 = ["Яночка", "Яночка", "Яночка", "Мышка", "Мышка пушистая", "Зайка", "Котик", "Зубастик", "Зубик", "Зубочистка", "Мышеловка", "Крошечка", "Красавица моя", "Принцесса"];
     const W2 = ["люблю", "целую", "обнимаю", "ценю", "люблю", "люблю", "благодарю", "уважаю"];
@@ -754,13 +808,15 @@
     const btnNext  = document.getElementById("btnNext");
     const btnCalendar = document.getElementById("btnCalendar");
     const btnSurprise = document.getElementById("btnSurprise");
+    const btnChihuahuaRain = document.getElementById("btnChihuahuaRain");
+    const btnChihuahuaRainInside = document.getElementById("btnChihuahuaRainInside");
 
     const caption = document.getElementById("caption");
-    const photo   = document.getElementById("photo");
+    const photo = document.getElementById("photo");
 
-    const notifyBell  = document.getElementById("notifyBell");
+    const notifyBell = document.getElementById("notifyBell");
     const notifyBadge = document.getElementById("notifyBadge");
-    const loveToast   = document.getElementById("loveToast");
+    const loveToast = document.getElementById("loveToast");
 
     const calendarModal = document.getElementById("calendarModal");
     const calendarBackdrop = document.getElementById("calendarBackdrop");
@@ -775,8 +831,13 @@
 
     let notificationOpened = false;
 
-    function show(el){ el.style.display = "block"; }
-    function hide(el){ el.style.display = "none"; }
+    function show(el){
+      el.style.display = "block";
+    }
+
+    function hide(el){
+      el.style.display = "none";
+    }
 
     function pick(arr){
       return arr[Math.floor(Math.random() * arr.length)];
@@ -831,7 +892,6 @@
       files.forEach(path => {
         const day = extractDayPrefix(path);
         if (!day) return;
-
         if (!map[day]) map[day] = [];
         map[day].push(path);
       });
@@ -881,10 +941,8 @@
       buttons.forEach(btn => {
         btn.addEventListener("click", () => {
           const day = btn.dataset.day;
-
           buttons.forEach(item => item.classList.remove("active"));
           btn.classList.add("active");
-
           renderCalendarPreview(day);
         });
       });
@@ -911,6 +969,54 @@
       surpriseModal.setAttribute("aria-hidden", "true");
     }
 
+    function ensureRainLayer(){
+      let layer = document.getElementById("chihuahuaRainLayer");
+      if (!layer) {
+        layer = document.createElement("div");
+        layer.id = "chihuahuaRainLayer";
+        layer.className = "chihuahua-rain-layer";
+        document.body.appendChild(layer);
+      }
+      return layer;
+    }
+
+    function createChihuahuaDrop(layer, delay = 0){
+      const img = document.createElement("img");
+      img.className = "chihuahua-drop";
+      img.src = pick(CHIHUAHUA_IMAGES) + `?v=${Date.now()}_${Math.random()}`;
+      img.alt = "Чихуахуа";
+
+      const startLeft = Math.random() * Math.max(window.innerWidth - 60, 60);
+      const size = 34 + Math.random() * 40;
+      const duration = 2.8 + Math.random() * 2.6;
+      const drift = -70 + Math.random() * 140;
+      const rotate = -70 + Math.random() * 140;
+
+      img.style.left = `${startLeft}px`;
+      img.style.setProperty("--size", `${size}px`);
+      img.style.setProperty("--drift", `${drift}px`);
+      img.style.setProperty("--rotate", `${rotate}deg`);
+      img.style.animationDuration = `${duration}s`;
+      img.style.animationDelay = `${delay}s`;
+
+      img.addEventListener("animationend", () => {
+        img.remove();
+      });
+
+      layer.appendChild(img);
+    }
+
+    function startChihuahuaRain(count = 28){
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const layer = ensureRainLayer();
+      const total = prefersReducedMotion ? 8 : count;
+
+      for (let i = 0; i < total; i++) {
+        const delay = prefersReducedMotion ? 0 : Math.random() * 1.8;
+        createChihuahuaDrop(layer, delay);
+      }
+    }
+
     notifyBell.addEventListener("click", openLoveNotification);
 
     btnStart.addEventListener("click", () => {
@@ -919,15 +1025,15 @@
       generate();
     });
 
-    btnNext.addEventListener("click", () => {
-      generate();
-    });
-
+    btnNext.addEventListener("click", generate);
     btnCalendar.addEventListener("click", openCalendar);
+    btnSurprise.addEventListener("click", openSurprise);
+    btnChihuahuaRain.addEventListener("click", () => startChihuahuaRain());
+    btnChihuahuaRainInside.addEventListener("click", () => startChihuahuaRain());
+
     calendarBackdrop.addEventListener("click", closeCalendar);
     calendarClose.addEventListener("click", closeCalendar);
 
-    btnSurprise.addEventListener("click", openSurprise);
     surpriseBackdrop.addEventListener("click", closeSurprise);
     surpriseClose.addEventListener("click", closeSurprise);
 
