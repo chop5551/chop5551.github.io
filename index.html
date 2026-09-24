@@ -2,1050 +2,1177 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Для тебя</title>
+  <meta name="description" content="Маленький секрет, сделанный с нежностью" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#ffe3f1" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#1c0f16" media="(prefers-color-scheme: dark)" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Для тебя" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta property="og:title" content="Для тебя 💖" />
+  <meta property="og:description" content="Маленький секрет, сделанный с нежностью" />
+  <meta property="og:image" content="./icons/icon-512.png" />
+
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icons/icon-192.png" type="image/png" />
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,600&display=swap&subset=cyrillic" />
+
   <style>
-    :root{
-      --pink1:#ff5aa5;
-      --pink2:#ff87c2;
-      --pink3:#ffd3e8;
-      --bg1:#fff0f7;
-      --bg2:#ffe3f1;
-      --card:#ffffffcc;
-      --text:#3b1d2a;
-      --danger:#ff3b7a;
-      --border:#ffd0e6;
-      --shadow:0 20px 80px rgba(255, 90, 165, 0.18);
-      --shadow-strong:0 26px 90px rgba(255, 90, 165, 0.28);
-    }
-
-    *{ box-sizing: border-box; }
-
-    html, body{
-      margin:0;
-      padding:0;
-    }
-
-    body{
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
-      background:
-        radial-gradient(1200px 700px at 20% 10%, var(--bg1), transparent 60%),
-        radial-gradient(900px 600px at 80% 30%, var(--bg2), transparent 55%),
-        linear-gradient(180deg, #fff, #fff6fb);
-      color: var(--text);
-      min-height: 100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding: 18px;
-      overflow-x: hidden;
-    }
-
-    button, input, select, textarea{
-      font: inherit;
-    }
-
-    .card{
-      position: relative;
-      width: min(760px, 96vw);
-      background: var(--card);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--border);
-      border-radius: 28px;
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-
-    .top{
-      padding: 34px 22px 14px;
-      text-align:center;
-    }
-
-    h1{
-      margin:0 0 10px;
-      font-size: clamp(22px, 3.2vw, 34px);
-      letter-spacing: 0.2px;
-    }
-
-    .hint{
-      margin:0;
-      opacity:.85;
-      font-size:15px;
-    }
-
-    .notify-wrap{
-      position:absolute;
-      top:16px;
-      right:16px;
-      z-index:5;
-    }
-
-    .notify-btn{
-      position:relative;
-      width:64px;
-      height:64px;
-      border:0;
-      border-radius:50%;
-      cursor:pointer;
-      display:grid;
-      place-items:center;
-      background:
-        radial-gradient(circle at 30% 30%, #fff, #ffe9f3 45%, #ffd0e6 100%);
-      box-shadow:
-        0 12px 30px rgba(255, 90, 165, 0.28),
-        inset 0 2px 10px rgba(255,255,255,.9);
-      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
-    }
-
-    .notify-btn:hover{
-      transform: translateY(-2px) scale(1.02);
-      box-shadow:
-        0 16px 36px rgba(255, 90, 165, 0.35),
-        inset 0 2px 10px rgba(255,255,255,.95);
-      filter: brightness(1.02);
-    }
-
-    .notify-btn:active{
-      transform: scale(.98);
-    }
-
-    .notify-btn::before{
-      content:"";
-      position:absolute;
-      inset:-7px;
-      border-radius:50%;
-      border:2px solid rgba(255, 90, 165, .22);
-      opacity:0;
-      transform:scale(.9);
-    }
-
-    .notify-btn.ringing::before{
-      animation: bellPulse 1.6s ease-out infinite;
-    }
-
-    .bell-icon{
-      width:30px;
-      height:30px;
-      fill: url(#bellGradient);
-      transform-origin: top center;
-      filter: drop-shadow(0 5px 10px rgba(255, 90, 165, 0.22));
-    }
-
-    .notify-btn.ringing .bell-icon{
-      animation: bellRing 1.15s ease-in-out infinite;
-    }
-
-    .badge{
-      position:absolute;
-      top:-4px;
-      right:-2px;
-      min-width:24px;
-      height:24px;
-      padding:0 7px;
-      border-radius:999px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background: linear-gradient(135deg, #ff2f74, #ff6a9d);
-      color:#fff;
-      font-size:13px;
-      font-weight:800;
-      box-shadow: 0 10px 18px rgba(255, 47, 116, .35);
-      border: 2px solid #fff7fb;
-      transition: opacity .25s ease, transform .25s ease;
-    }
-
-    .badge.hide{
-      opacity:0;
-      transform: scale(.5);
-      pointer-events:none;
-    }
-
-    .love-toast{
-      display:none;
-      margin: 0 22px 18px;
-      padding: 16px 18px;
-      border-radius: 22px;
-      background:
-        linear-gradient(135deg, rgba(255,255,255,.95), rgba(255,233,243,.95));
-      border: 1px solid #ffc7df;
-      box-shadow: 0 14px 40px rgba(255, 90, 165, 0.16);
-      animation: toastIn .45s ease-out;
-    }
-
-    .love-toast.show{
-      display:block;
-    }
-
-    .love-title{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      margin:0 0 8px;
-      font-weight:800;
-      color: var(--pink1);
-      font-size: 16px;
-    }
-
-    .love-dot{
-      width:10px;
-      height:10px;
-      border-radius:50%;
-      background: linear-gradient(135deg, var(--pink1), var(--pink2));
-      box-shadow: 0 0 0 8px rgba(255, 90, 165, 0.12);
-      flex: 0 0 auto;
-    }
-
-    .love-text{
-      margin:0;
-      font-size: clamp(16px, 2.5vw, 21px);
-      line-height:1.5;
-      font-weight:700;
-      text-align:center;
-    }
-
-    .love-emoji{
-      margin-top:10px;
-      text-align:center;
-      font-size: clamp(22px, 4vw, 30px);
-      letter-spacing: 4px;
-      animation: sparkle 1.8s ease-in-out infinite;
-    }
-
-    .actions{
-      width: 100%;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      padding: 16px 22px 22px;
-    }
-
-    .actions-row{
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-
-    button.main-btn,
-    button.calendar-btn,
-    button.surprise-btn,
-    button.rain-btn{
-      cursor:pointer;
-      border:0;
-      padding: 14px 20px;
-      border-radius: 999px;
-      font-weight: 700;
-      font-size: 16px;
-      transition: transform .12s ease, box-shadow .12s ease, filter .12s ease, border-color .12s ease;
-      display: inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      min-height: 48px;
-    }
-
-    button.main-btn{
-      color: white;
-      background: linear-gradient(135deg, var(--pink1), var(--pink2));
-      box-shadow: 0 12px 30px rgba(255, 90, 165, 0.35);
-    }
-
-    button.main-btn:hover{
-      transform: translateY(-1px);
-      filter: brightness(1.02);
-      box-shadow: 0 16px 40px rgba(255, 90, 165, 0.42);
-    }
-
-    button.main-btn:active{
-      transform: translateY(0px) scale(0.99);
-    }
-
-    button.calendar-btn{
-      color: var(--text);
-      border:1px solid var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,238,246,.95));
-      box-shadow: 0 10px 24px rgba(255, 90, 165, 0.12);
-    }
-
-    button.calendar-btn:hover{
-      transform: translateY(-1px);
-      border-color:#ffb8d9;
-      box-shadow: 0 14px 30px rgba(255, 90, 165, 0.16);
-    }
-
-    button.calendar-btn:active{
-      transform: scale(.99);
-    }
-
-    button.surprise-btn{
-      color: white;
-      background: linear-gradient(135deg, #a855f7, #d946ef);
-      box-shadow: 0 12px 30px rgba(217, 70, 239, 0.35);
-      flex-basis: 100%;
-      max-width: 320px;
-    }
-
-    button.surprise-btn:hover{
-      transform: translateY(-1px);
-      filter: brightness(1.02);
-      box-shadow: 0 16px 40px rgba(217, 70, 239, 0.42);
-    }
-
-    button.surprise-btn:active{
-      transform: translateY(0px) scale(0.99);
-    }
-
-    button.rain-btn{
-      color: white;
-      background: linear-gradient(135deg, #ff8a5b, #ff5aa5);
-      box-shadow: 0 12px 30px rgba(255, 90, 165, 0.28);
-      flex-basis: 100%;
-      max-width: 320px;
-    }
-
-    button.rain-btn:hover{
-      transform: translateY(-1px);
-      filter: brightness(1.03);
-      box-shadow: 0 16px 40px rgba(255, 90, 165, 0.34);
-    }
-
-    button.rain-btn:active{
-      transform: translateY(0) scale(0.99);
-    }
-
-    .content{
-      padding: 0 22px 18px;
-      display:none;
-      animation: pop .35s ease-out;
-    }
-
-    .animate{
-      animation: fadeUp .45s ease-out;
-    }
-
-    .caption{
-      margin: 0 0 12px;
-      text-align:center;
-      font-weight: 800;
-      font-size: clamp(18px, 3vw, 30px);
-      color: var(--pink1);
-      text-shadow: 0 8px 30px rgba(255, 90, 165, 0.25);
-    }
-
-    .photo{
-      width: 100%;
-      max-height: 52vh;
-      object-fit: contain;
-      border-radius: 22px;
-      border: 1px solid var(--border);
-      box-shadow: 0 14px 40px rgba(0,0,0,0.08);
-      display:block;
-      background: rgba(255,255,255,0.55);
-    }
-
-    .footer{
-      padding: 0 22px 18px;
-      text-align:center;
-      font-size: 12px;
-      opacity: .6;
-    }
-
-    .modal{
-      position:fixed;
-      inset:0;
-      display:none;
-      z-index:1000;
-    }
-
-    .modal.show{
-      display:block;
-    }
-
-    .modal-backdrop{
-      position:absolute;
-      inset:0;
-      background: rgba(29, 10, 20, .45);
-      backdrop-filter: blur(8px);
-      animation: fadeIn .2s ease-out;
-    }
-
-    .modal-panel{
-      position:relative;
-      width:min(920px, calc(100vw - 24px));
-      max-height:min(86vh, 760px);
-      overflow:auto;
-      margin: 4vh auto;
-      border-radius: 28px;
-      background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,245,250,.98));
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-strong);
-      padding: 22px;
-      animation: modalUp .24s ease-out;
-    }
-
-    .modal-head{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:16px;
-      margin-bottom:18px;
-      flex: 0 0 auto;
-    }
-
-    .modal-kicker{
-      margin:0 0 4px;
-      font-size:12px;
-      text-transform:uppercase;
-      letter-spacing:.16em;
-      opacity:.65;
-    }
-
-    .modal-title{
-      margin:0;
-      font-size: clamp(22px, 3vw, 32px);
-      color: var(--pink1);
-      line-height:1.15;
-    }
-
-    .modal-subtitle{
-      margin:8px 0 0;
-      font-size:14px;
-      opacity:.75;
-    }
-
-    .modal-close{
-      width:44px;
-      height:44px;
-      border-radius:50%;
-      border:1px solid var(--border);
-      background:#fff;
-      font-size:26px;
-      line-height:1;
-      cursor:pointer;
-      color: var(--text);
-      box-shadow: 0 6px 18px rgba(255, 90, 165, 0.08);
-    }
-
-    .weekday-grid{
-      display:grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap:10px;
-      margin-bottom:18px;
-      flex: 0 0 auto;
-    }
-
-    .weekday-btn{
-      border:1px solid var(--border);
-      background: #fff;
-      border-radius: 18px;
-      padding: 14px 16px;
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--text);
-      cursor:pointer;
-      text-align:left;
-      transition: transform .12s ease, box-shadow .12s ease, background .12s ease, color .12s ease;
-    }
-
-    .weekday-btn:hover{
-      transform: translateY(-1px);
-      box-shadow: 0 12px 24px rgba(255, 90, 165, 0.12);
-    }
-
-    .weekday-btn.active{
-      background: linear-gradient(135deg, var(--pink1), var(--pink2));
-      color:#fff;
-      border-color: transparent;
-    }
-
-    .calendar-preview{
-      min-height: 0;
-      border-radius: 24px;
-      border: 1px solid var(--border);
-      background:
-        radial-gradient(700px 260px at 50% 0%, rgba(255, 90, 165, 0.10), transparent 60%),
-        linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,240,247,.95));
-      overflow: hidden;
-      padding: 16px;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      gap: 12px;
-    }
-
-    .calendar-preview-inner{
-      width:100%;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      gap:12px;
-      animation: fadeUp .25s ease-out;
-    }
-
-    .calendar-day-title{
-      text-align:center;
-      margin: 0;
-      font-size: clamp(18px, 2.4vw, 26px);
-      font-weight: 800;
-      color: var(--pink1);
-      flex: 0 0 auto;
-    }
-
-    .calendar-image, .surprise-image-element{
-      width: 100%;
-      max-width: 400px;
-      max-height: 400px;
-      object-fit: contain;
-      object-position: center;
-      border-radius: 18px;
-      border:1px solid #ffd8ea;
-      box-shadow: 0 14px 40px rgba(255, 90, 165, 0.14);
-      background:#fff;
-      display:block;
-      margin: 0 auto;
-    }
-
-    .preview-empty{
-      font-size: 16px;
-      opacity:.7;
-      text-align:center;
-      max-width: 32ch;
-    }
-
-    .chihuahua-rain-layer{
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      overflow: hidden;
-      z-index: 9999;
-    }
-
-    .chihuahua-drop{
-      position: absolute;
-      top: -90px;
-      width: var(--size, 54px);
-      height: var(--size, 54px);
-      object-fit: contain;
-      user-select: none;
-      pointer-events: none;
-      filter: drop-shadow(0 10px 14px rgba(0,0,0,.14));
-      animation: chihuahuaFall linear forwards;
-      opacity: 0;
-    }
-
-    @keyframes pop{
-      from{ transform: translateY(6px); opacity: 0; }
-      to{ transform: translateY(0); opacity: 1; }
-    }
-
-    @keyframes fadeUp{
-      from{ opacity:0; transform: translateY(8px); }
-      to{ opacity:1; transform: translateY(0); }
-    }
-
-    @keyframes fadeIn{
-      from{ opacity:0; }
-      to{ opacity:1; }
-    }
-
-    @keyframes modalUp{
-      from{ opacity:0; transform: translateY(12px) scale(.985); }
-      to{ opacity:1; transform: translateY(0) scale(1); }
-    }
-
-    @keyframes toastIn{
-      from{ opacity:0; transform: translateY(-10px) scale(.98); }
-      to{ opacity:1; transform: translateY(0) scale(1); }
-    }
-
-    @keyframes bellRing{
-      0%, 100% { transform: rotate(0deg); }
-      10% { transform: rotate(18deg); }
-      20% { transform: rotate(-16deg); }
-      30% { transform: rotate(14deg); }
-      40% { transform: rotate(-10deg); }
-      50% { transform: rotate(6deg); }
-      60% { transform: rotate(-4deg); }
-      70% { transform: rotate(2deg); }
-    }
-
-    @keyframes bellPulse{
-      0%{ opacity:.65; transform:scale(.9); }
-      70%{ opacity:0; transform:scale(1.28); }
-      100%{ opacity:0; transform:scale(1.35); }
-    }
-
-    @keyframes sparkle{
-      0%,100%{ transform: translateY(0); opacity: 1; }
-      50%{ transform: translateY(-2px); opacity: .9; }
-    }
-
-    @keyframes chihuahuaFall{
-      0%{
-        transform: translate3d(0, -90px, 0) rotate(0deg) scale(0.9);
+    @layer tokens, base, components, motion;
+
+    @layer tokens {
+      :root {
+        color-scheme: light dark;
+
+        --pink-500: #ff4f9e;
+        --pink-400: #ff78b6;
+        --pink-300: #ffa6cf;
+        --violet-500: #a855f7;
+        --fuchsia-500: #d946ef;
+        --peach-500: #ff8a5b;
+
+        --bg: #fff5fa;
+        --bg-glow-1: #ffd9ec;
+        --bg-glow-2: #ffe6d9;
+        --bg-glow-3: #f1ddff;
+        --surface: rgb(255 255 255 / .72);
+        --surface-strong: rgb(255 255 255 / .94);
+        --text: #3b1d2a;
+        --text-muted: rgb(59 29 42 / .68);
+        --accent: #e8338a;
+        --border: rgb(255 120 182 / .28);
+        --ring: rgb(255 79 158 / .55);
+        --toast-tint: rgb(255 233 243 / .55);
+
+        --shadow-sm: 0 6px 18px rgb(255 79 158 / .10);
+        --shadow-md: 0 14px 36px rgb(255 79 158 / .18);
+        --shadow-lg: 0 30px 90px rgb(255 79 158 / .22);
+
+        --radius-lg: 32px;
+        --radius-md: 22px;
+        --radius-sm: 16px;
+
+        --ease-out: cubic-bezier(.22, 1, .36, 1);
+        --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+
+        --font-sans: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #150a10;
+          --bg-glow-1: #4a1330;
+          --bg-glow-2: #3a1a14;
+          --bg-glow-3: #2d1545;
+          --surface: rgb(40 18 30 / .66);
+          --surface-strong: rgb(34 15 26 / .96);
+          --text: #ffe9f3;
+          --text-muted: rgb(255 233 243 / .66);
+          --accent: #ff7bbb;
+          --border: rgb(255 120 182 / .22);
+          --toast-tint: rgb(90 25 60 / .45);
+          --shadow-sm: 0 6px 18px rgb(0 0 0 / .30);
+          --shadow-md: 0 14px 36px rgb(0 0 0 / .40);
+          --shadow-lg: 0 30px 90px rgb(0 0 0 / .55);
+        }
+      }
+    }
+
+    @layer base {
+      *, *::before, *::after { box-sizing: border-box; }
+
+      html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        display: grid;
+        place-items: center;
+        padding:
+          max(16px, env(safe-area-inset-top))
+          max(16px, env(safe-area-inset-right))
+          max(16px, env(safe-area-inset-bottom))
+          max(16px, env(safe-area-inset-left));
+        font-family: var(--font-sans);
+        color: var(--text);
+        background-color: var(--bg);
+        overflow-x: clip;
+        -webkit-font-smoothing: antialiased;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      /* Мягкое «северное сияние» на фоне */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: -20vmax;
+        z-index: -1;
+        background:
+          radial-gradient(40vmax 40vmax at 20% 15%, var(--bg-glow-1), transparent 60%),
+          radial-gradient(35vmax 35vmax at 85% 30%, var(--bg-glow-3), transparent 60%),
+          radial-gradient(45vmax 40vmax at 50% 95%, var(--bg-glow-2), transparent 60%);
+        filter: blur(20px);
+        animation: aurora 24s ease-in-out infinite alternate;
+      }
+
+      button { font: inherit; color: inherit; }
+      img { display: block; max-width: 100%; }
+      [hidden] { display: none !important; }
+
+      :focus-visible {
+        outline: 3px solid var(--ring);
+        outline-offset: 3px;
+      }
+
+      .visually-hidden {
+        position: absolute !important;
+        width: 1px; height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+    }
+
+    @layer components {
+      /* ---------- Карточка ---------- */
+      .card {
+        position: relative;
+        width: min(760px, 100%);
+        background: var(--surface);
+        backdrop-filter: blur(24px) saturate(1.4);
+        -webkit-backdrop-filter: blur(24px) saturate(1.4);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        isolation: isolate;
+        overflow: hidden;
+        animation: cardIn .8s var(--ease-out) both;
+      }
+
+      .card::after {
+        /* тонкий блик по краю стекла */
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        pointer-events: none;
+        background: linear-gradient(160deg, rgb(255 255 255 / .55), transparent 35%);
+        mix-blend-mode: soft-light;
+        z-index: -1;
+      }
+
+      .top {
+        padding: clamp(28px, 6vw, 44px) clamp(20px, 5vw, 88px) 10px;
+        text-align: center;
+      }
+
+      .eyebrow {
+        margin: 0 0 10px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: .22em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: clamp(30px, 6vw, 46px);
+        line-height: 1.05;
+        letter-spacing: -.01em;
+        text-wrap: balance;
+        background: linear-gradient(120deg, var(--pink-500), var(--fuchsia-500) 60%, var(--peach-500));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .hint {
+        margin: 0 auto;
+        max-width: 46ch;
+        color: var(--text-muted);
+        font-size: 15px;
+        line-height: 1.55;
+        text-wrap: pretty;
+      }
+
+      /* ---------- Колокольчик ---------- */
+      .notify-btn {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        z-index: 5;
+        width: 60px;
+        height: 60px;
+        border: 0;
+        border-radius: 50%;
+        cursor: pointer;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at 30% 30%, #fff, #ffe9f3 45%, #ffcce3 100%);
+        box-shadow: 0 12px 30px rgb(255 79 158 / .30), inset 0 2px 10px rgb(255 255 255 / .9);
+        transition: transform .3s var(--ease-spring), box-shadow .3s var(--ease-out);
+      }
+
+      .notify-btn:hover { transform: translateY(-2px) scale(1.04); }
+      .notify-btn:active { transform: scale(.95); }
+
+      .notify-btn::before {
+        content: "";
+        position: absolute;
+        inset: -7px;
+        border-radius: 50%;
+        border: 2px solid rgb(255 79 158 / .3);
         opacity: 0;
       }
-      10%{
-        opacity: 1;
-      }
-      100%{
-        transform: translate3d(var(--drift, 0px), 110vh, 0) rotate(var(--rotate, 180deg)) scale(1);
-        opacity: .96;
-      }
-    }
 
-    @media (prefers-reduced-motion: reduce){
-      .notify-btn.ringing::before,
-      .notify-btn.ringing .bell-icon,
-      .love-emoji,
-      .chihuahua-drop{
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-      }
-    }
+      .notify-btn[data-ringing]::before { animation: bellPulse 1.6s ease-out infinite; }
 
-    @media (max-width: 640px){
-      .weekday-grid{
-        grid-template-columns: 1fr;
+      .bell-icon {
+        width: 28px;
+        height: 28px;
+        fill: url(#bellGradient);
+        transform-origin: 50% 8%;
       }
 
-      .modal-panel{
-        position: relative;
-        width: min(920px, calc(100vw - 24px));
-        height: min(88vh, 760px);
-        margin: 3vh auto;
-        border-radius: 28px;
-        background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,245,250,.98));
-        border: 1px solid var(--border);
-        box-shadow: var(--shadow-strong);
-        padding: 18px;
-        animation: modalUp .24s ease-out;
-        overflow: hidden;
+      .notify-btn[data-ringing] .bell-icon { animation: bellRing 1.4s ease-in-out infinite; }
+
+      .badge {
+        position: absolute;
+        top: -3px;
+        right: -2px;
+        min-width: 24px;
+        height: 24px;
+        padding: 0 7px;
+        border-radius: 999px;
         display: grid;
-        grid-template-rows: auto auto minmax(0, 1fr);
-        gap: 12px;
+        place-items: center;
+        background: linear-gradient(135deg, #ff2f74, #ff6a9d);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 800;
+        box-shadow: 0 8px 16px rgb(255 47 116 / .35);
+        border: 2px solid #fff7fb;
+        transition: opacity .3s var(--ease-out), scale .3s var(--ease-spring);
       }
 
-      .surprise-modal-panel {
-        display: block;
+      .notify-btn:not([data-ringing]) .badge { opacity: 0; scale: .4; }
+
+      /* ---------- Любовное уведомление ---------- */
+      .love-toast {
+        margin: 6px clamp(16px, 4vw, 22px) 10px;
+        padding: 18px;
+        border-radius: var(--radius-md);
+        background: linear-gradient(135deg, var(--surface-strong), var(--toast-tint));
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-md);
+        text-align: center;
+        animation: toastIn .6s var(--ease-spring) both;
+      }
+
+      .love-title {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin: 0 0 8px;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      .love-dot {
+        flex: none;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--pink-500);
+        box-shadow: 0 0 0 6px rgb(255 79 158 / .15);
+        animation: dotPulse 1.8s ease-in-out infinite;
+      }
+
+      .love-text {
+        margin: 0;
+        font-family: var(--font-display);
+        font-style: italic;
+        font-weight: 600;
+        font-size: clamp(20px, 3.4vw, 26px);
+        line-height: 1.35;
+        text-wrap: balance;
+      }
+
+      .love-emoji {
+        margin-top: 10px;
+        font-size: clamp(20px, 4vw, 26px);
+        letter-spacing: 4px;
+        animation: float 2.4s ease-in-out infinite;
+      }
+
+      /* ---------- Кнопки ---------- */
+      .actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        padding: 18px clamp(16px, 5vw, 88px) 22px;
+      }
+
+      .btn {
+        --btn-bg: var(--surface-strong);
+        --btn-fg: var(--text);
+        --btn-shadow: var(--shadow-sm);
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 54px;
+        padding: 14px 22px;
+        border: 1px solid transparent;
+        border-radius: 999px;
+        background: var(--btn-bg);
+        color: var(--btn-fg);
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        box-shadow: var(--btn-shadow);
+        overflow: hidden;
+        transition:
+          transform .35s var(--ease-spring),
+          box-shadow .35s var(--ease-out),
+          filter .2s ease;
+        touch-action: manipulation;
+      }
+
+      .btn::after {
+        /* мягкий блик при наведении */
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / .35) 50%, transparent 70%);
+        translate: -120% 0;
+        transition: translate .7s var(--ease-out);
+        pointer-events: none;
+      }
+
+      @media (hover: hover) {
+        .btn:hover { transform: translateY(-2px); filter: brightness(1.04); box-shadow: var(--shadow-md); }
+        .btn:hover::after { translate: 120% 0; }
+      }
+
+      .btn:active { transform: scale(.97); transition-duration: .1s; }
+
+      .btn--wide { grid-column: 1 / -1; }
+
+      .btn--primary {
+        --btn-bg: linear-gradient(135deg, var(--pink-500), var(--pink-400));
+        --btn-fg: #fff;
+        --btn-shadow: 0 12px 30px rgb(255 79 158 / .38);
+      }
+
+      .btn--ghost { border-color: var(--border); }
+
+      .btn--violet {
+        --btn-bg: linear-gradient(135deg, var(--violet-500), var(--fuchsia-500));
+        --btn-fg: #fff;
+        --btn-shadow: 0 12px 30px rgb(217 70 239 / .34);
+      }
+
+      .btn--sunset {
+        --btn-bg: linear-gradient(135deg, var(--peach-500), var(--pink-500));
+        --btn-fg: #fff;
+        --btn-shadow: 0 12px 30px rgb(255 110 120 / .32);
+      }
+
+      /* ---------- Экран с фото ---------- */
+      .screen { padding: 4px clamp(16px, 4vw, 22px) 0; }
+
+      .caption {
+        margin: 4px 0 14px;
+        min-height: 1.3em;
+        text-align: center;
+        font-family: var(--font-display);
+        font-style: italic;
+        font-weight: 600;
+        font-size: clamp(24px, 4.4vw, 36px);
+        line-height: 1.2;
+        color: var(--accent);
+        text-wrap: balance;
+        view-transition-name: caption;
+      }
+
+      .photo-frame {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 100%;
+        height: min(56dvh, 560px);
+        padding: 0;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        background:
+          radial-gradient(closest-side, rgb(255 79 158 / .08), transparent),
+          var(--surface-strong);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+        cursor: pointer;
+        view-transition-name: photo;
+      }
+
+      .photo-frame img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .photo-frame .photo-bg {
+        /* размытая подложка из того же фото вместо пустых полей */
+        position: absolute;
+        inset: -30px;
+        width: calc(100% + 60px);
+        height: calc(100% + 60px);
+        object-fit: cover;
+        filter: blur(28px) saturate(1.3);
+        opacity: .45;
+        scale: 1.1;
+      }
+
+      .photo-frame .photo-main { position: relative; }
+
+      .photo-counter {
+        position: absolute;
+        right: 12px;
+        bottom: 12px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #fff;
+        background: rgb(30 10 20 / .45);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        pointer-events: none;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .screen .actions { padding-inline: 0; }
+
+      .footer {
+        padding: 0 22px 20px;
+        text-align: center;
+        font-size: 12px;
+        letter-spacing: .08em;
+        color: var(--text-muted);
+      }
+
+      .footer span { color: var(--accent); }
+
+      /* ---------- Диалоги (нативный <dialog>) ---------- */
+      dialog {
+        width: min(880px, calc(100vw - 24px));
+        max-height: min(90dvh, 820px);
+        padding: clamp(18px, 3vw, 26px);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        background: var(--surface-strong);
+        color: var(--text);
+        box-shadow: var(--shadow-lg);
+        overscroll-behavior: contain;
+        opacity: 0;
+        translate: 0 16px;
+        scale: .97;
+        transition:
+          opacity .3s var(--ease-out),
+          translate .4s var(--ease-out),
+          scale .4s var(--ease-out),
+          overlay .3s allow-discrete,
+          display .3s allow-discrete;
+      }
+
+      dialog[open] { opacity: 1; translate: 0 0; scale: 1; }
+
+      @starting-style {
+        dialog[open] { opacity: 0; translate: 0 16px; scale: .97; }
+      }
+
+      dialog::backdrop {
+        background: rgb(29 10 20 / 0);
+        backdrop-filter: blur(0);
+        transition: background .3s, backdrop-filter .3s, overlay .3s allow-discrete, display .3s allow-discrete;
+      }
+
+      dialog[open]::backdrop {
+        background: rgb(29 10 20 / .5);
+        backdrop-filter: blur(10px);
+      }
+
+      @starting-style {
+        dialog[open]::backdrop { background: rgb(29 10 20 / 0); backdrop-filter: blur(0); }
+      }
+
+      .modal-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 16px;
+        margin-bottom: 18px;
+      }
+
+      .modal-kicker {
+        margin: 0 0 6px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .18em;
+        color: var(--text-muted);
+      }
+
+      .modal-title {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: clamp(26px, 4vw, 34px);
+        line-height: 1.1;
+        color: var(--accent);
+      }
+
+      .modal-title--violet { color: var(--fuchsia-500); }
+
+      .modal-subtitle {
+        margin: 8px 0 0;
+        font-size: 14px;
+        color: var(--text-muted);
+      }
+
+      .modal-close {
+        flex: none;
+        width: 44px;
+        height: 44px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        border: 1px solid var(--border);
+        background: var(--surface-strong);
+        cursor: pointer;
+        box-shadow: var(--shadow-sm);
+        transition: transform .3s var(--ease-spring), rotate .3s var(--ease-out);
+      }
+
+      .modal-close:hover { rotate: 90deg; }
+      .modal-close svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
+
+      .weekday-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+
+      .weekday-btn {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 14px 16px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        background: var(--surface);
+        font-size: 16px;
+        font-weight: 700;
+        text-align: left;
+        text-transform: capitalize;
+        cursor: pointer;
+        transition: transform .3s var(--ease-spring), box-shadow .3s var(--ease-out), background .2s;
+      }
+
+      @media (hover: hover) {
+        .weekday-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+      }
+
+      .weekday-btn[aria-pressed="true"] {
+        background: linear-gradient(135deg, var(--pink-500), var(--pink-400));
+        color: #fff;
+        border-color: transparent;
+        box-shadow: 0 10px 24px rgb(255 79 158 / .3);
+      }
+
+      .today-tag {
+        position: absolute;
+        top: -9px;
+        right: 12px;
+        font-size: 10px;
+        line-height: 1.4;
+        box-shadow: 0 0 0 3px var(--surface-strong);
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        padding: 3px 8px;
+        border-radius: 999px;
+        background: var(--pink-500);
+        color: #fff;
+      }
+
+      .preview {
+        display: grid;
+        place-items: center;
+        gap: 12px;
+        min-height: 260px;
+        padding: 16px;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border);
+        background:
+          radial-gradient(700px 260px at 50% 0%, rgb(255 79 158 / .10), transparent 60%),
+          var(--surface);
+        text-align: center;
+      }
+
+      .preview-title {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: clamp(22px, 3vw, 28px);
+        color: var(--accent);
+        text-transform: capitalize;
+      }
+
+      .preview-img {
+        width: 100%;
+        max-width: 440px;
+        max-height: min(46dvh, 440px);
+        object-fit: contain;
+        border-radius: var(--radius-sm);
+        box-shadow: var(--shadow-md);
+        background: #fff;
+      }
+
+      .preview-empty {
+        margin: 0;
+        max-width: 34ch;
+        color: var(--text-muted);
+        font-size: 16px;
+        line-height: 1.5;
+      }
+
+      .fade-in { animation: fadeUp .5s var(--ease-out) both; }
+
+      .surprise-body {
+        display: grid;
+        justify-items: center;
+        gap: 18px;
+      }
+
+      .surprise-body .actions { padding: 0; width: min(420px, 100%); }
+
+      /* ---------- Дождик из чихуахуа ---------- */
+      .rain-layer {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: 2147483647;
+        contain: strict;
+      }
+
+      .rain-drop {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: var(--size);
         height: auto;
+        filter: drop-shadow(0 10px 14px rgb(0 0 0 / .16));
+        user-select: none;
+        will-change: transform, opacity;
+      }
+
+      /* ---------- Адаптив ---------- */
+      @media (max-width: 520px) {
+        .actions { grid-template-columns: 1fr; }
+        .notify-btn { width: 54px; height: 54px; top: 12px; right: 12px; }
+        .top { padding-inline: 20px; padding-top: 72px; }
+        .photo-frame { height: min(50dvh, 520px); }
+        dialog { max-height: 92dvh; }
       }
     }
 
-    @media (max-width: 420px){
-      .photo{ max-height: 46vh; }
-
-      button.main-btn,
-      button.calendar-btn,
-      button.surprise-btn,
-      button.rain-btn{
-        width: min(320px, 100%);
+    @layer motion {
+      @keyframes aurora {
+        from { transform: translate3d(0, 0, 0) rotate(0deg); }
+        to   { transform: translate3d(-4vmax, 3vmax, 0) rotate(8deg); }
+      }
+      @keyframes cardIn {
+        from { opacity: 0; transform: translateY(18px) scale(.985); }
+        to   { opacity: 1; transform: none; }
+      }
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to   { opacity: 1; transform: none; }
+      }
+      @keyframes toastIn {
+        from { opacity: 0; transform: translateY(-12px) scale(.96); }
+        to   { opacity: 1; transform: none; }
+      }
+      @keyframes bellRing {
+        0%, 60%, 100% { rotate: 0deg; }
+        8%  { rotate: 18deg; }
+        16% { rotate: -16deg; }
+        24% { rotate: 12deg; }
+        32% { rotate: -8deg; }
+        40% { rotate: 4deg; }
+        48% { rotate: -2deg; }
+      }
+      @keyframes bellPulse {
+        0%   { opacity: .7; transform: scale(.9); }
+        80%, 100% { opacity: 0; transform: scale(1.35); }
+      }
+      @keyframes dotPulse {
+        50% { box-shadow: 0 0 0 10px rgb(255 79 158 / 0); }
+      }
+      @keyframes float {
+        50% { transform: translateY(-3px); }
       }
 
-      .notify-btn{
-        width:58px;
-        height:58px;
-      }
+      /* View Transitions: плавная смена фото и подписи */
+      ::view-transition-old(photo),
+      ::view-transition-new(photo) { animation-duration: .45s; animation-timing-function: var(--ease-out); }
+      ::view-transition-old(caption) { animation: .25s var(--ease-out) both vtOut; }
+      ::view-transition-new(caption) { animation: .4s var(--ease-out) .08s both vtIn; }
+      @keyframes vtOut { to { opacity: 0; transform: translateY(-8px); } }
+      @keyframes vtIn  { from { opacity: 0; transform: translateY(8px); } }
 
-      .badge{
-        min-width:22px;
-        height:22px;
-        font-size:12px;
-      }
-
-      .love-text{
-        font-size: 17px;
-      }
-
-      .actions-row{
-        gap:10px;
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after, ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) {
+          animation-duration: .01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: .01ms !important;
+        }
       }
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="notify-wrap">
-      <button class="notify-btn ringing" id="notifyBell" aria-label="Открыть уведомление">
-        <svg width="0" height="0" style="position:absolute">
-          <defs>
-            <linearGradient id="bellGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#ff5aa5"></stop>
-              <stop offset="100%" stop-color="#ff87c2"></stop>
-            </linearGradient>
-          </defs>
-        </svg>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="bellGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#ff4f9e" />
+        <stop offset="100%" stop-color="#d946ef" />
+      </linearGradient>
+    </defs>
+  </svg>
 
-        <svg class="bell-icon" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm7-5h-1V11a6 6 0 1 0-12 0v6H5a1 1 0 1 0 0 2h14a1 1 0 1 0 0-2Zm-3 0H8V11a4 4 0 1 1 8 0v6Z"/>
-        </svg>
+  <main class="card">
+    <button class="notify-btn" id="notifyBell" type="button" aria-label="Открыть уведомление" aria-controls="loveToast" aria-expanded="false" data-ringing>
+      <svg class="bell-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm7-5h-1V11a6 6 0 1 0-12 0v6H5a1 1 0 1 0 0 2h14a1 1 0 1 0 0-2Zm-3 0H8V11a4 4 0 1 1 8 0v6Z"/>
+      </svg>
+      <span class="badge" aria-hidden="true">1</span>
+    </button>
 
-        <span class="badge" id="notifyBadge">1</span>
+    <header class="top">
+      <p class="eyebrow">Только для тебя</p>
+      <h1>Маленький секрет</h1>
+      <p class="hint">Нажми на колокольчик, открой календарь, выбери сюрприз или запусти дождик из чихуахуа 💖</p>
+    </header>
+
+    <section class="love-toast" id="loveToast" role="status" hidden>
+      <p class="love-title"><span class="love-dot" aria-hidden="true"></span>Новое любовное уведомление</p>
+      <p class="love-text">Яночка, я тебя люблю! Хорошего дня, малышка!</p>
+      <div class="love-emoji" aria-hidden="true">💖 💘 💝 💕 💞 🌷 ✨ 🥰</div>
+    </section>
+
+    <div class="actions" id="home">
+      <button class="btn btn--primary btn--wide" id="btnStart" type="button">Если мышка — то нажми 🐭</button>
+      <button class="btn btn--ghost" id="btnCalendar" type="button">📅 Календарь</button>
+      <button class="btn btn--violet" id="btnSurprise" type="button">🎁 Сюрприз</button>
+      <button class="btn btn--sunset btn--wide" data-rain type="button">🐶 Чихуахуа-дождик</button>
+    </div>
+
+    <section class="screen" id="screen" hidden aria-label="Фото и тёплые слова">
+      <p class="caption" id="caption" aria-live="polite"></p>
+      <button class="photo-frame" id="photoFrame" type="button" aria-label="Показать следующее фото">
+        <img class="photo-bg" id="photoBg" alt="" aria-hidden="true" decoding="async" />
+        <img class="photo-main" id="photo" alt="Наше фото" decoding="async" fetchpriority="high" />
+        <span class="photo-counter" id="photoCounter" aria-hidden="true"></span>
+      </button>
+
+      <div class="actions">
+        <button class="btn btn--primary btn--wide" id="btnNext" type="button">Ещё раз 💞</button>
+        <button class="btn btn--ghost" id="btnHome" type="button">← Назад</button>
+        <button class="btn btn--sunset" data-rain type="button">🐶 Дождик</button>
+      </div>
+    </section>
+
+    <footer class="footer">Сделано с <span>нежностью</span></footer>
+  </main>
+
+  <dialog id="calendarModal" aria-labelledby="calendarTitle" closedby="any">
+    <div class="modal-head">
+      <div>
+        <p class="modal-kicker">Календарь</p>
+        <h2 class="modal-title" id="calendarTitle">Выбери день недели</h2>
+        <p class="modal-subtitle">Покажется случайная картинка этого дня</p>
+      </div>
+      <button class="modal-close" type="button" data-close aria-label="Закрыть окно">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
       </button>
     </div>
-
-    <div class="top">
-      <h1>Маленький секрет</h1>
-      <p class="hint">Нажми на колокольчик сверху, на кнопку ниже, открой календарь или запусти дождик из чихуахуа 💖</p>
+    <div class="weekday-grid" id="weekdayGrid" role="group" aria-label="Дни недели"></div>
+    <div class="preview" id="calendarPreview" aria-live="polite">
+      <p class="preview-empty">Выбери день недели, и здесь появится красивая картинка</p>
     </div>
+  </dialog>
 
-    <div class="love-toast" id="loveToast">
-      <div class="love-title">
-        <span class="love-dot"></span>
-        Новое любовное уведомление
+  <dialog id="surpriseModal" aria-labelledby="surpriseTitle" closedby="any">
+    <div class="modal-head">
+      <div>
+        <p class="modal-kicker">Особый момент</p>
+        <h2 class="modal-title modal-title--violet" id="surpriseTitle">Твой сюрприз!</h2>
       </div>
-      <p class="love-text">Яночка, я тебя люблю ! Хорошего дня малышка !</p>
-      <div class="love-emoji">💖 💘 💝 💕 💞 🌷 ✨ 🥰</div>
+      <button class="modal-close" type="button" data-close aria-label="Закрыть окно">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
     </div>
-
-    <div class="actions actions-row" id="actionsStart">
-      <button class="main-btn" id="btnStart" type="button">Если мышка то нажми</button>
-      <button class="calendar-btn" id="btnCalendar" type="button">📅 Календарь</button>
-      <button class="surprise-btn" id="btnSurprise" type="button">🎁 Выбери сюрприз</button>
-      <button class="rain-btn" id="btnChihuahuaRain" type="button">🐶 Чихуахуа-дождик</button>
-    </div>
-
-    <div class="content" id="screen">
-      <div class="caption" id="caption"></div>
-      <img class="photo" id="photo" src="" alt="Фото" />
-
-      <div class="actions actions-row" id="actionsInScreen" style="padding:16px 22px 0;">
-        <button class="main-btn" id="btnNext" type="button">Ещё раз</button>
-        <button class="rain-btn" id="btnChihuahuaRainInside" type="button">🐶 Чихуахуа-дождик</button>
+    <div class="surprise-body">
+      <img class="preview-img" id="surpriseImage" alt="Сюрприз" decoding="async" />
+      <div class="actions">
+        <button class="btn btn--violet btn--wide" id="btnSurpriseAgain" type="button">🎁 Другой сюрприз</button>
       </div>
     </div>
+  </dialog>
 
-    <div class="footer">Сделано с нежностью</div>
-  </div>
+  <script type="module">
+    /* =========================================================
+       Настройки. Чтобы добавить фото — положи файл в папку
+       и увеличь число (или допиши имя файла в список).
+       ========================================================= */
+    const CONFIG = {
+      photos: range(40).map(i => `./img/${i}.webp`),
+      surprises: range(4).map(i => `./gusto/${i}.webp`),
+      chihuahuas: range(5).map(i => `./chi/${i}.webp`),
+      calendar: {
+        "понедельник": ["понедельник", "понедельник_2", "понедельник_3"],
+        "вторник":     ["вторник", "вторник_2", "вторник_3", "вторник_4", "вторник_5"],
+        "среда":       ["среда", "среда_2", "среда_3", "среда_4"],
+        "четверг":     ["четверг", "четверг_2", "четверг_3", "четверг_4"],
+        "пятница":     ["пятница", "пятница_2", "пятница_3"],
+      },
+      words: {
+        who:  ["Яночка", "Яночка", "Яночка", "Мышка", "Мышка пушистая", "Зайка", "Котик", "Зубастик", "Зубик", "Зубочистка", "Мышеловка", "Крошечка", "Красавица моя", "Принцесса"],
+        what: ["люблю", "целую", "обнимаю", "ценю", "люблю", "люблю", "благодарю", "уважаю"],
+        how:  ["сильно", "нежно", "безгранично", "всей душой", "твой ослик"],
+      },
+      rainDrops: 32,
+    };
 
-  <div class="modal" id="calendarModal" aria-hidden="true">
-    <div class="modal-backdrop" id="calendarBackdrop"></div>
+    const WEEKDAYS = ["воскресенье", "понедельник", "вторник", "среда", "четверг", "пятница", "суббота"];
+    const NOTIFY_KEY = "love-notification-seen";
 
-    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="calendarTitle">
-      <div class="modal-head">
-        <div>
-          <p class="modal-kicker">Календарь</p>
-          <h2 class="modal-title" id="calendarTitle">Выбери день недели</h2>
-          <p class="modal-subtitle">После выбора покажется случайная фотография этого дня</p>
-        </div>
-        <button class="modal-close" id="calendarClose" type="button" aria-label="Закрыть окно">×</button>
-      </div>
+    /* ---------- утилиты ---------- */
+    function range(n) { return Array.from({ length: n }, (_, i) => i + 1); }
+    const $ = (sel, root = document) => root.querySelector(sel);
+    const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+    const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+    const haptic = (pattern = 12) => { try { navigator.vibrate?.(pattern); } catch {} };
 
-      <div class="weekday-grid" id="weekdayGrid"></div>
+    const storage = {
+      get(key) { try { return localStorage.getItem(key); } catch { return null; } },
+      set(key, value) { try { localStorage.setItem(key, value); } catch {} },
+    };
 
-      <div class="calendar-preview" id="calendarPreview">
-        <div class="preview-empty">Выбери день недели, и здесь появится красивая фотография</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal" id="surpriseModal" aria-hidden="true">
-    <div class="modal-backdrop" id="surpriseBackdrop"></div>
-
-    <div class="modal-panel surprise-modal-panel" role="dialog" aria-modal="true">
-      <div class="modal-head">
-        <div>
-          <p class="modal-kicker">Особый момент</p>
-          <h2 class="modal-title" style="color: #d946ef;">Твой сюрприз!</h2>
-        </div>
-        <button class="modal-close" id="surpriseClose" type="button" aria-label="Закрыть окно">×</button>
-      </div>
-
-      <div style="padding-top: 10px;">
-        <img class="surprise-image-element" id="surpriseImage" src="" alt="Сюрприз из gusto" />
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const IMAGES = Array.from({ length: 40 }, (_, i) => `./img/${i + 1}.jpg`);
-    const GUSTO_IMAGES = Array.from({ length: 4 }, (_, i) => `./gusto/${i + 1}.webp`);
-    const CHIHUAHUA_IMAGES = Array.from({ length: 5 }, (_, i) => `./chi/${i + 1}.png`);
-
-    const W1 = ["Яночка", "Яночка", "Яночка", "Мышка", "Мышка пушистая", "Зайка", "Котик", "Зубастик", "Зубик", "Зубочистка", "Мышеловка", "Крошечка", "Красавица моя", "Принцесса"];
-    const W2 = ["люблю", "целую", "обнимаю", "ценю", "люблю", "люблю", "благодарю", "уважаю"];
-    const W3 = ["сильно", "нежно", "безгранично", "всей душой", "твой ослик"];
-
-    const CALENDAR_FILES = [
-      "./calendar/понедельник.png",
-      "./calendar/понедельник_2.png",
-      "./calendar/понедельник_3.png",
-      "./calendar/вторник.png",
-      "./calendar/вторник_2.png",
-      "./calendar/вторник_3.png",
-      "./calendar/вторник_4.png",
-      "./calendar/среда.png",
-      "./calendar/среда_2.png",
-      "./calendar/среда_3.png",
-      "./calendar/среда_4.png",
-      "./calendar/четверг.png",
-      "./calendar/четверг_2.png",
-      "./calendar/четверг_3.png",
-      "./calendar/четверг_4.png",
-      "./calendar/пятница.png",
-      "./calendar/пятница_2.png",
-      "./calendar/пятница_3.png"
-    ];
-
-    const WEEKDAYS_ORDER = [
-      "понедельник",
-      "вторник",
-      "среда",
-      "четверг",
-      "пятница",
-      "суббота",
-      "воскресенье"
-    ];
-
-    const actionsStart = document.getElementById("actionsStart");
-    const screen = document.getElementById("screen");
-
-    const btnStart = document.getElementById("btnStart");
-    const btnNext  = document.getElementById("btnNext");
-    const btnCalendar = document.getElementById("btnCalendar");
-    const btnSurprise = document.getElementById("btnSurprise");
-    const btnChihuahuaRain = document.getElementById("btnChihuahuaRain");
-    const btnChihuahuaRainInside = document.getElementById("btnChihuahuaRainInside");
-
-    const caption = document.getElementById("caption");
-    const photo = document.getElementById("photo");
-
-    const notifyBell = document.getElementById("notifyBell");
-    const notifyBadge = document.getElementById("notifyBadge");
-    const loveToast = document.getElementById("loveToast");
-
-    const calendarModal = document.getElementById("calendarModal");
-    const calendarBackdrop = document.getElementById("calendarBackdrop");
-    const calendarClose = document.getElementById("calendarClose");
-    const weekdayGrid = document.getElementById("weekdayGrid");
-    const calendarPreview = document.getElementById("calendarPreview");
-
-    const surpriseModal = document.getElementById("surpriseModal");
-    const surpriseBackdrop = document.getElementById("surpriseBackdrop");
-    const surpriseClose = document.getElementById("surpriseClose");
-    const surpriseImage = document.getElementById("surpriseImage");
-
-    let notificationOpened = false;
-
-    function show(el){
-      el.style.display = "block";
+    /** «Мешок» без повторов: каждый элемент выпадает один раз за круг,
+        и новый круг не начинается с того, что было последним. */
+    function shuffleBag(items) {
+      let bag = [];
+      let last;
+      return () => {
+        if (!bag.length) {
+          bag = [...items];
+          for (let i = bag.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [bag[i], bag[j]] = [bag[j], bag[i]];
+          }
+          const end = bag.length - 1;
+          if (end > 0 && bag[end] === last) [bag[0], bag[end]] = [bag[end], bag[0]];
+        }
+        last = bag.pop();
+        return last;
+      };
     }
 
-    function hide(el){
-      el.style.display = "none";
-    }
-
-    function pick(arr){
-      return arr[Math.floor(Math.random() * arr.length)];
-    }
-
-    function restartCaptionAnimation(){
-      caption.classList.remove("animate");
-      void caption.offsetWidth;
-      caption.classList.add("animate");
-    }
-
-    function generate(){
-      const phrase = `${pick(W1)} ${pick(W2)} ${pick(W3)}`;
-      caption.textContent = phrase;
-
-      const img = pick(IMAGES);
-      photo.src = img + `?v=${Date.now()}`;
-
-      restartCaptionAnimation();
-    }
-
-    function goHome(){
-      hide(screen);
-      show(actionsStart);
-      caption.textContent = "";
-      photo.src = "";
-    }
-
-    function openLoveNotification(){
-      if (notificationOpened) return;
-      notificationOpened = true;
-      notifyBadge.classList.add("hide");
-      notifyBell.classList.remove("ringing");
-      loveToast.classList.add("show");
-    }
-
-    function normalizeFileName(path){
-      const fileName = decodeURIComponent(path.split("/").pop() || "").toLowerCase();
-      return fileName.replace(/\.(png|jpg|jpeg|webp)$/i, "");
-    }
-
-    function extractDayPrefix(path){
-      const name = normalizeFileName(path);
-      const beforeDash = name.split("-")[0];
-      const beforeUnderscore = beforeDash.split("_")[0];
-      return beforeUnderscore.trim();
-    }
-
-    function buildCalendarMap(files){
-      const map = {};
-
-      files.forEach(path => {
-        const day = extractDayPrefix(path);
-        if (!day) return;
-        if (!map[day]) map[day] = [];
-        map[day].push(path);
-      });
-
-      return map;
-    }
-
-    const calendarMap = buildCalendarMap(CALENDAR_FILES);
-
-    function getExistingWeekdays(){
-      const existing = WEEKDAYS_ORDER.filter(day => Array.isArray(calendarMap[day]) && calendarMap[day].length > 0);
-      return existing.length ? existing : Object.keys(calendarMap);
-    }
-
-    function renderCalendarPreview(day){
-      const files = calendarMap[day] || [];
-
-      if (!files.length){
-        calendarPreview.innerHTML = '<div class="preview-empty">Для этого дня пока нет фото</div>';
-        return;
+    /** Загружает и декодирует картинку заранее, чтобы смена была мгновенной. */
+    const imageCache = new Map();
+    function preload(src) {
+      if (!imageCache.has(src)) {
+        const img = new Image();
+        img.decoding = "async";
+        img.src = src;
+        imageCache.set(src, img.decode().catch(() => {}));
       }
-
-      const selected = pick(files);
-
-      calendarPreview.innerHTML = `
-        <div class="calendar-preview-inner">
-          <div class="calendar-day-title">${day}</div>
-          <img
-            class="calendar-image"
-            src="${selected}?v=${Date.now()}"
-            alt="Фото для дня недели: ${day}"
-            loading="lazy"
-          />
-        </div>
-      `;
+      return imageCache.get(src);
     }
 
-    function renderWeekdays(){
-      const days = getExistingWeekdays();
+    /** Смена состояния через View Transitions API (с фолбэком). */
+    function transition(update) {
+      if (!document.startViewTransition || reducedMotion.matches) return Promise.resolve(update());
+      return document.startViewTransition(update).finished;
+    }
 
-      weekdayGrid.innerHTML = days.map(day => `
-        <button class="weekday-btn" data-day="${day}" type="button">${day}</button>
-      `).join("");
+    /* ---------- Уведомление ---------- */
+    const bell = $("#notifyBell");
+    const toast = $("#loveToast");
+    const today = new Date().toDateString();
 
-      const buttons = weekdayGrid.querySelectorAll(".weekday-btn");
+    if (storage.get(NOTIFY_KEY) === today) bell.removeAttribute("data-ringing");
 
-      buttons.forEach(btn => {
-        btn.addEventListener("click", () => {
-          const day = btn.dataset.day;
-          buttons.forEach(item => item.classList.remove("active"));
-          btn.classList.add("active");
-          renderCalendarPreview(day);
-        });
+    bell.addEventListener("click", () => {
+      const open = toast.hidden;
+      toast.hidden = !open;
+      bell.setAttribute("aria-expanded", String(open));
+      if (open) {
+        bell.removeAttribute("data-ringing");
+        storage.set(NOTIFY_KEY, today);
+        haptic([10, 40, 10]);
+      }
+    });
+
+    /* ---------- Фото + слова ---------- */
+    const home = $("#home");
+    const screen = $("#screen");
+    const caption = $("#caption");
+    const photo = $("#photo");
+    const photoBg = $("#photoBg");
+    const counter = $("#photoCounter");
+
+    const nextPhoto = shuffleBag(CONFIG.photos);
+    const nextWord = {
+      who: shuffleBag(CONFIG.words.who),
+      what: shuffleBag(CONFIG.words.what),
+      how: shuffleBag(CONFIG.words.how),
+    };
+
+    let upcoming = nextPhoto();
+    let seen = 0;
+    let busy = false;
+
+    async function showNext(extraUpdate) {
+      if (busy) return;
+      busy = true;
+      const src = upcoming;
+      await preload(src);
+      const phrase = `${nextWord.who()} ${nextWord.what()} ${nextWord.how()}`;
+      seen++;
+
+      await transition(() => {
+        extraUpdate?.();
+        caption.textContent = phrase;
+        photo.src = src;
+        photoBg.src = src;
+        counter.textContent = `${seen} ♡`;
+      }).catch(() => {});
+
+      upcoming = nextPhoto();
+      preload(upcoming); // следующее фото грузится заранее
+      busy = false;
+    }
+
+    function openScreen() {
+      haptic();
+      showNext(() => { home.hidden = true; screen.hidden = false; }).then(() => {
+        if (caption.getBoundingClientRect().top < 0 || photo.getBoundingClientRect().bottom > innerHeight) {
+          caption.scrollIntoView({ block: "start", behavior: reducedMotion.matches ? "auto" : "smooth" });
+        }
       });
     }
 
-    function openCalendar(){
-      calendarModal.classList.add("show");
-      calendarModal.setAttribute("aria-hidden", "false");
+    function goHome() {
+      transition(() => { screen.hidden = true; home.hidden = false; });
+      $("#btnStart").focus({ preventScroll: true });
     }
 
-    function closeCalendar(){
-      calendarModal.classList.remove("show");
-      calendarModal.setAttribute("aria-hidden", "true");
+    $("#btnStart").addEventListener("click", openScreen);
+    $("#btnNext").addEventListener("click", () => { haptic(); showNext(); });
+    $("#photoFrame").addEventListener("click", () => showNext());
+    $("#btnHome").addEventListener("click", goHome);
+
+    // Свайп по фото — следующее
+    let touchX = null;
+    $("#photoFrame").addEventListener("touchstart", e => { touchX = e.touches[0].clientX; }, { passive: true });
+    $("#photoFrame").addEventListener("touchend", e => {
+      if (touchX !== null && Math.abs(e.changedTouches[0].clientX - touchX) > 50) showNext();
+      touchX = null;
+    }, { passive: true });
+
+    // Клавиатура: → / пробел — следующее, Esc — назад
+    document.addEventListener("keydown", e => {
+      if (screen.hidden || document.querySelector("dialog[open]")) return;
+      if (e.key === "ArrowRight") { e.preventDefault(); showNext(); }
+      if (e.key === "Escape") goHome();
+    });
+
+    /* ---------- Диалоги ---------- */
+    for (const dialog of document.querySelectorAll("dialog")) {
+      dialog.addEventListener("click", e => {
+        // закрытие по клику на фон (для браузеров без closedby)
+        if (e.target === dialog) {
+          const r = dialog.getBoundingClientRect();
+          const inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+          if (!inside) dialog.close();
+        }
+        if (e.target.closest("[data-close]")) dialog.close();
+      });
     }
 
-    function openSurprise(){
-      surpriseImage.src = pick(GUSTO_IMAGES) + `?v=${Date.now()}`;
-      surpriseModal.classList.add("show");
-      surpriseModal.setAttribute("aria-hidden", "false");
-    }
+    /* ---------- Календарь ---------- */
+    const calendarModal = $("#calendarModal");
+    const weekdayGrid = $("#weekdayGrid");
+    const preview = $("#calendarPreview");
+    const todayName = WEEKDAYS[new Date().getDay()];
+    const calendarBags = Object.fromEntries(
+      Object.entries(CONFIG.calendar).map(([day, files]) =>
+        [day, shuffleBag(files.map(f => `./calendar/${encodeURIComponent(f)}.webp`))])
+    );
 
-    function closeSurprise(){
-      surpriseModal.classList.remove("show");
-      surpriseModal.setAttribute("aria-hidden", "true");
-    }
-
-    function ensureRainLayer(){
-      let layer = document.getElementById("chihuahuaRainLayer");
-      if (!layer) {
-        layer = document.createElement("div");
-        layer.id = "chihuahuaRainLayer";
-        layer.className = "chihuahua-rain-layer";
-        document.body.appendChild(layer);
+    weekdayGrid.append(...Object.keys(CONFIG.calendar).map(day => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "weekday-btn";
+      btn.dataset.day = day;
+      btn.setAttribute("aria-pressed", "false");
+      btn.textContent = day;
+      if (day === todayName) {
+        const tag = document.createElement("span");
+        tag.className = "today-tag";
+        tag.textContent = "сегодня";
+        btn.append(tag);
       }
-      return layer;
-    }
+      return btn;
+    }));
 
-    function createChihuahuaDrop(layer, delay = 0){
+    async function showDay(day) {
+      for (const b of weekdayGrid.children) b.setAttribute("aria-pressed", String(b.dataset.day === day));
+      const src = calendarBags[day]();
+      await preload(src);
+
+      const wrap = document.createElement("div");
+      wrap.className = "fade-in";
+      wrap.style.display = "grid";
+      wrap.style.justifyItems = "center";
+      wrap.style.gap = "12px";
+
+      const title = document.createElement("h3");
+      title.className = "preview-title";
+      title.textContent = day;
+
       const img = document.createElement("img");
-      img.className = "chihuahua-drop";
-      img.src = pick(CHIHUAHUA_IMAGES) + `?v=${Date.now()}_${Math.random()}`;
-      img.alt = "Чихуахуа";
+      img.className = "preview-img";
+      img.src = src;
+      img.alt = `Картинка для дня недели: ${day}`;
 
-      const startLeft = Math.random() * Math.max(window.innerWidth - 60, 60);
-      const size = 34 + Math.random() * 40;
-      const duration = 2.8 + Math.random() * 2.6;
-      const drift = -70 + Math.random() * 140;
-      const rotate = -70 + Math.random() * 140;
-
-      img.style.left = `${startLeft}px`;
-      img.style.setProperty("--size", `${size}px`);
-      img.style.setProperty("--drift", `${drift}px`);
-      img.style.setProperty("--rotate", `${rotate}deg`);
-      img.style.animationDuration = `${duration}s`;
-      img.style.animationDelay = `${delay}s`;
-
-      img.addEventListener("animationend", () => {
-        img.remove();
-      });
-
-      layer.appendChild(img);
+      wrap.append(title, img);
+      preview.replaceChildren(wrap);
     }
 
-    function startChihuahuaRain(count = 28){
-      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const layer = ensureRainLayer();
-      const total = prefersReducedMotion ? 8 : count;
+    weekdayGrid.addEventListener("click", e => {
+      const btn = e.target.closest(".weekday-btn");
+      if (btn) { haptic(); showDay(btn.dataset.day); }
+    });
+
+    $("#btnCalendar").addEventListener("click", () => {
+      calendarModal.showModal();
+      if (CONFIG.calendar[todayName] && !weekdayGrid.querySelector('[aria-pressed="true"]')) {
+        showDay(todayName);
+      } else if (!CONFIG.calendar[todayName] && !weekdayGrid.querySelector('[aria-pressed="true"]')) {
+        preview.innerHTML = '<p class="preview-empty">Сегодня выходной — отдыхай, моя хорошая 🌷<br>А картинки будних дней — выше</p>';
+      }
+    });
+
+    /* ---------- Сюрприз ---------- */
+    const surpriseModal = $("#surpriseModal");
+    const surpriseImage = $("#surpriseImage");
+    const nextSurprise = shuffleBag(CONFIG.surprises);
+
+    async function showSurprise() {
+      const src = nextSurprise();
+      await preload(src);
+      surpriseImage.classList.remove("fade-in");
+      surpriseImage.src = src;
+      void surpriseImage.offsetWidth;
+      surpriseImage.classList.add("fade-in");
+    }
+
+    $("#btnSurprise").addEventListener("click", async () => {
+      haptic();
+      await showSurprise();
+      surpriseModal.showModal();
+    });
+    $("#btnSurpriseAgain").addEventListener("click", () => { haptic(); showSurprise(); });
+
+    /* ---------- Дождик из чихуахуа (Web Animations API) ---------- */
+    let rainLayer;
+    const MAX_DROPS = 90;
+
+    function rain(count = CONFIG.rainDrops) {
+      rainLayer ??= Object.assign(document.createElement("div"), { className: "rain-layer", ariaHidden: "true" });
+      if (!rainLayer.isConnected) document.body.append(rainLayer);
+
+      const reduce = reducedMotion.matches;
+      const total = Math.min(reduce ? 8 : count, MAX_DROPS - rainLayer.childElementCount);
+      const vw = innerWidth;
+      const vh = innerHeight;
+      haptic([20, 30, 20, 30, 20]);
 
       for (let i = 0; i < total; i++) {
-        const delay = prefersReducedMotion ? 0 : Math.random() * 1.8;
-        createChihuahuaDrop(layer, delay);
+        const img = document.createElement("img");
+        img.className = "rain-drop";
+        img.src = pick(CONFIG.chihuahuas);
+        img.alt = "";
+        img.decoding = "async";
+        const size = 38 + Math.random() * 42;
+        img.style.setProperty("--size", `${size}px`);
+
+        const x = Math.random() * (vw - size);
+        const drift = (Math.random() - .5) * 160;
+        const spin = (Math.random() - .5) * 280;
+        rainLayer.append(img);
+
+        const anim = img.animate([
+          { transform: `translate3d(${x}px, ${-size * 1.5}px, 0) rotate(0deg) scale(.85)`, opacity: 0 },
+          { opacity: 1, offset: .08 },
+          { transform: `translate3d(${x + drift}px, ${vh + size}px, 0) rotate(${spin}deg) scale(1)`, opacity: .95 },
+        ], {
+          duration: reduce ? 1200 : 2600 + Math.random() * 2600,
+          delay: reduce ? 0 : Math.random() * 1800,
+          easing: "cubic-bezier(.35, 0, .65, 1)",
+          fill: "backwards",
+        });
+        anim.finished.then(() => img.remove(), () => img.remove());
       }
     }
 
-    notifyBell.addEventListener("click", openLoveNotification);
-
-    btnStart.addEventListener("click", () => {
-      hide(actionsStart);
-      show(screen);
-      generate();
+    document.addEventListener("click", e => {
+      if (e.target.closest("[data-rain]")) rain();
     });
 
-    btnNext.addEventListener("click", generate);
-    btnCalendar.addEventListener("click", openCalendar);
-    btnSurprise.addEventListener("click", openSurprise);
-    btnChihuahuaRain.addEventListener("click", () => startChihuahuaRain());
-    btnChihuahuaRainInside.addEventListener("click", () => startChihuahuaRain());
-
-    calendarBackdrop.addEventListener("click", closeCalendar);
-    calendarClose.addEventListener("click", closeCalendar);
-
-    surpriseBackdrop.addEventListener("click", closeSurprise);
-    surpriseClose.addEventListener("click", closeSurprise);
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        if (calendarModal.classList.contains("show")) closeCalendar();
-        if (surpriseModal.classList.contains("show")) closeSurprise();
-      }
+    /* ---------- Прогрев: подгружаем самое нужное в простое ---------- */
+    const idle = window.requestIdleCallback ?? (cb => setTimeout(cb, 400));
+    idle(() => {
+      preload(upcoming);
+      CONFIG.chihuahuas.forEach(preload);
     });
 
-    renderWeekdays();
-    goHome();
+    /* ---------- PWA: офлайн и установка на главный экран ---------- */
+    if ("serviceWorker" in navigator && location.protocol !== "file:") {
+      addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+    }
   </script>
 </body>
 </html>
