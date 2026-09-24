@@ -1,8 +1,9 @@
 name: Обновить десерты
 
+# Сейчас gustobakery.ru показывает серверам GitHub капчу (Yandex SmartCaptcha),
+# поэтому расписание выключено, а список обновляется вручную через
+# scripts/desserts-from-browser.js. Запуск вручную оставлен: Actions → Run workflow.
 on:
-  schedule:
-    - cron: "17 3 * * *" # каждый день в 06:17 по Москве
   workflow_dispatch:
 
 permissions:
@@ -22,11 +23,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-
-      - name: Установить браузер (на случай капчи)
-        run: |
-          npm install --no-save --no-package-lock playwright
-          npx playwright install --with-deps chromium
 
       - name: Собрать список десертов
         run: node scripts/update-desserts.mjs

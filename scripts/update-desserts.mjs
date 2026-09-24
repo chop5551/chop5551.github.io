@@ -1,5 +1,5 @@
 // Собирает актуальный список десертов с gustobakery.ru в gusto/desserts.json.
-// Запускается GitHub Actions по расписанию (см. .github/workflows/update-desserts.yml).
+// Запуск: GitHub Actions → «Обновить десерты» (сейчас сайт отдаёт серверам GitHub капчу).
 // Локально: node scripts/update-desserts.mjs [файл.html]
 import { readFile, writeFile } from "node:fs/promises";
 
@@ -50,28 +50,14 @@ export function parse(html) {
 
 const isCaptcha = html => /Вы не робот|smart-?captcha/i.test(html);
 
-// Сайт защищён Yandex SmartCaptcha: если простой запрос получил капчу,
-// пробуем открыть страницу настоящим браузером (Playwright).
-async function loadWithBrowser() {
-  const { chromium } = await import("playwright");
-  const browser = await chromium.launch();
-  try {
-    const page = await browser.newPage({ locale: "ru-RU", viewport: { width: 1280, height: 900 } });
-    await page.goto(SOURCE, { waitUntil: "networkidle", timeout: 60_000 });
-    await page.waitForSelector("article img", { timeout: 20_000 }).catch(() => {});
-    return await page.content();
-  } finally {
-    await browser.close();
-  }
-}
-
 async function load() {
   const file = process.argv[2];
   if (file) return readFile(file, "utf8");
   const html = await loadWithFetch();
-  if (!isCaptcha(html)) return html;
-  console.log("Простой запрос получил капчу — открываю страницу браузером");
-  return loadWithBrowser();
+  if (isCaptcha(html)) {
+    throw new Error("Сайт показал капчу. Обнови список вручную: scripts/desserts-from-browser.js");
+  }
+  return html;
 }
 
 async function loadWithFetch() {
