@@ -26,6 +26,14 @@ jobs:
       - name: Собрать список десертов
         run: node scripts/update-desserts.mjs
 
+      - name: Сохранить HTML для отладки
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: page-html
+          path: page.html
+          if-no-files-found: ignore
+
       - name: Сохранить изменения
         run: |
           # дата обновления меняется всегда — коммитим, только если поменялся сам список

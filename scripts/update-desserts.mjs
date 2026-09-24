@@ -62,7 +62,20 @@ async function load() {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const items = parse(await load());
+  const html = await load();
+  const items = parse(html);
+  if (process.env.DEBUG_HTML || items.length < 3) {
+    await writeFile("page.html", html);
+    console.log({
+      length: html.length,
+      title: first(/<title>([\s\S]*?)<\/title>/, html),
+      articles: (html.match(/<article\b/g) ?? []).length,
+      smartofood: (html.match(/smartofood/g) ?? []).length,
+      nextData: html.includes("__NEXT_DATA__"),
+      nextFlight: html.includes("self.__next_f"),
+    });
+    console.log(html.slice(0, 3000));
+  }
   // Не затираем рабочий список, если разметка сайта поменялась и ничего не нашлось
   if (items.length < 3) throw new Error(`Найдено только ${items.length} десертов — разметка сайта могла измениться`);
   await writeFile(OUT, JSON.stringify({ source: SOURCE, updated: new Date().toISOString(), items }, null, 2) + "\n");
