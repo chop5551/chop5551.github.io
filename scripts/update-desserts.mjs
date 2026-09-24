@@ -48,9 +48,33 @@ export function parse(html) {
   return items;
 }
 
+const isCaptcha = html => /Вы не робот|smart-?captcha/i.test(html);
+
+// Сайт защищён Yandex SmartCaptcha: если простой запрос получил капчу,
+// пробуем открыть страницу настоящим браузером (Playwright).
+async function loadWithBrowser() {
+  const { chromium } = await import("playwright");
+  const browser = await chromium.launch();
+  try {
+    const page = await browser.newPage({ locale: "ru-RU", viewport: { width: 1280, height: 900 } });
+    await page.goto(SOURCE, { waitUntil: "networkidle", timeout: 60_000 });
+    await page.waitForSelector("article img", { timeout: 20_000 }).catch(() => {});
+    return await page.content();
+  } finally {
+    await browser.close();
+  }
+}
+
 async function load() {
   const file = process.argv[2];
   if (file) return readFile(file, "utf8");
+  const html = await loadWithFetch();
+  if (!isCaptcha(html)) return html;
+  console.log("Простой запрос получил капчу — открываю страницу браузером");
+  return loadWithBrowser();
+}
+
+async function loadWithFetch() {
   const res = await fetch(SOURCE, {
     headers: {
       "user-agent": "Mozilla/5.0 (compatible; chop5551-desserts/1.0; +https://chop5551.github.io)",
@@ -68,7 +92,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     await writeFile("page.html", html);
     console.log({
       length: html.length,
-      title: first(/<title>([\s\S]*?)<\/title>/, html),
+      title: first(/<title[^>]*>([\s\S]*?)<\/title>/, html),
+      captcha: isCaptcha(html),
       articles: (html.match(/<article\b/g) ?? []).length,
       smartofood: (html.match(/smartofood/g) ?? []).length,
       nextData: html.includes("__NEXT_DATA__"),
