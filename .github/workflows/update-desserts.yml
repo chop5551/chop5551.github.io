@@ -1,0 +1,41 @@
+name: Обновить десерты
+
+on:
+  schedule:
+    - cron: "17 3 * * *" # каждый день в 06:17 по Москве
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-desserts
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Собрать список десертов
+        run: node scripts/update-desserts.mjs
+
+      - name: Сохранить изменения
+        run: |
+          # дата обновления меняется всегда — коммитим, только если поменялся сам список
+          if git diff --quiet -I '"updated"' -- gusto/desserts.json && git ls-files --error-unmatch gusto/desserts.json >/dev/null 2>&1; then
+            echo "Список десертов не изменился"
+            git checkout -- gusto/desserts.json
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898333+github-actions[bot]@users.noreply.github.com"
+          git add gusto/desserts.json
+          git commit -m "Обновить список десертов"
+          git push

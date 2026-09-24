@@ -1,6 +1,6 @@
 /* Service worker: мгновенная загрузка и работа офлайн.
    При изменении списка файлов увеличь VERSION. */
-const VERSION = "v2";
+const VERSION = "v3";
 const CACHE = `love-${VERSION}`;
 
 const CORE = [
@@ -29,8 +29,8 @@ self.addEventListener("fetch", event => {
   const { request } = event;
   if (request.method !== "GET") return;
 
-  // HTML: сначала сеть (чтобы изменения появлялись сразу), офлайн — из кэша
-  if (request.mode === "navigate") {
+  // HTML и список десертов: сначала сеть (чтобы изменения появлялись сразу), офлайн — из кэша
+  if (request.mode === "navigate" || new URL(request.url).pathname.endsWith(".json")) {
     event.respondWith(
       fetch(request)
         .then(res => { putInCache(request, res.clone()); return res; })

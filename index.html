@@ -673,6 +673,49 @@
 
       .surprise-body .actions { padding: 0; width: min(420px, 100%); }
 
+      .dessert-info {
+        display: grid;
+        gap: 6px;
+        width: min(440px, 100%);
+        text-align: center;
+      }
+
+      .dessert-name {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: clamp(22px, 3.4vw, 28px);
+        line-height: 1.2;
+        text-wrap: balance;
+      }
+
+      .dessert-meta {
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        font-weight: 700;
+        color: var(--fuchsia-500);
+      }
+
+      .dessert-meta span + span::before { content: "·"; margin-right: 10px; color: var(--text-muted); }
+
+      .dessert-desc {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.5;
+        color: var(--text-muted);
+        text-wrap: pretty;
+      }
+
+      .dessert-link {
+        justify-self: center;
+        margin-top: 2px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--accent);
+        text-underline-offset: 3px;
+      }
+
       /* ---------- Дождик из чихуахуа ---------- */
       .rain-layer {
         position: fixed;
@@ -842,7 +885,13 @@
       </button>
     </div>
     <div class="surprise-body">
-      <img class="preview-img" id="surpriseImage" alt="Сюрприз" decoding="async" />
+      <img class="preview-img" id="surpriseImage" alt="Сюрприз" decoding="async" referrerpolicy="no-referrer" />
+      <div class="dessert-info" id="dessertInfo" hidden>
+        <h3 class="dessert-name" id="dessertName"></h3>
+        <p class="dessert-meta" id="dessertMeta"></p>
+        <p class="dessert-desc" id="dessertDesc"></p>
+        <a class="dessert-link" id="dessertLink" target="_blank" rel="noopener">Посмотреть на сайте Gusto →</a>
+      </div>
       <div class="actions">
         <button class="btn btn--violet btn--wide" id="btnSurpriseAgain" type="button">🎁 Другой сюрприз</button>
       </div>
@@ -856,6 +905,9 @@
        ========================================================= */
     const CONFIG = {
       photos: range(40).map(i => `./img/${i}.webp`),
+      // Актуальные десерты с gustobakery.ru/deserty — список обновляет GitHub Actions раз в день.
+      // Если он недоступен, показываются локальные картинки из gusto/.
+      dessertsUrl: "./gusto/desserts.json",
       surprises: range(4).map(i => `./gusto/${i}.webp`),
       chihuahuas: range(5).map(i => `./chi/${i}.webp`),
       calendar: {
@@ -1098,15 +1150,62 @@
     /* ---------- Сюрприз ---------- */
     const surpriseModal = $("#surpriseModal");
     const surpriseImage = $("#surpriseImage");
-    const nextSurprise = shuffleBag(CONFIG.surprises);
+    const dessertInfo = $("#dessertInfo");
+    const localSurprises = CONFIG.surprises.map(image => ({ image }));
+    let nextSurprise = shuffleBag(localSurprises);
+    let dessertsLoaded;
+
+    /** Загружает список десертов один раз; при ошибке остаёмся на локальных картинках. */
+    function loadDesserts() {
+      dessertsLoaded ??= fetch(CONFIG.dessertsUrl, { cache: "no-cache" })
+        .then(res => (res.ok ? res.json() : null))
+        .then(data => {
+          const items = (data?.items ?? []).filter(d => d?.image && d?.name);
+          if (items.length) nextSurprise = shuffleBag(items);
+        })
+        .catch(() => {});
+      return dessertsLoaded;
+    }
+
+    function loadImage(src) {
+      return new Promise(resolve => {
+        const img = new Image();
+        img.referrerPolicy = "no-referrer";
+        img.onload = () => img.decode().then(() => resolve(true), () => resolve(true));
+        img.onerror = () => resolve(false);
+        img.src = src;
+      });
+    }
 
     async function showSurprise() {
-      const src = nextSurprise();
-      await preload(src);
+      await loadDesserts();
+      let item = nextSurprise();
+      // если картинка десерта не загрузилась — пробуем ещё пару, потом локальную
+      for (let tries = 0; !(await loadImage(item.image)); tries++) {
+        item = tries < 2 ? nextSurprise() : pick(localSurprises);
+        if (tries > 3) break;
+      }
+
       surpriseImage.classList.remove("fade-in");
-      surpriseImage.src = src;
+      surpriseImage.src = item.image;
+      surpriseImage.alt = item.name ?? "Сюрприз";
       void surpriseImage.offsetWidth;
       surpriseImage.classList.add("fade-in");
+
+      dessertInfo.hidden = !item.name;
+      if (item.name) {
+        $("#dessertName").textContent = item.name;
+        $("#dessertMeta").replaceChildren(...[item.weight, item.price].filter(Boolean).map(t => {
+          const span = document.createElement("span");
+          span.textContent = t;
+          return span;
+        }));
+        $("#dessertDesc").textContent = item.description ?? "";
+        $("#dessertLink").href = item.url ?? "https://gustobakery.ru/deserty";
+        dessertInfo.classList.remove("fade-in");
+        void dessertInfo.offsetWidth;
+        dessertInfo.classList.add("fade-in");
+      }
     }
 
     $("#btnSurprise").addEventListener("click", async () => {
@@ -1165,6 +1264,7 @@
     /* ---------- Прогрев: подгружаем самое нужное в простое ---------- */
     const idle = window.requestIdleCallback ?? (cb => setTimeout(cb, 400));
     idle(() => {
+      loadDesserts();
       preload(upcoming);
       CONFIG.chihuahuas.forEach(preload);
     });
