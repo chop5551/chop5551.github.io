@@ -1,6 +1,6 @@
 /* Service worker: мгновенная загрузка и работа офлайн.
    При изменении списка файлов увеличь VERSION. */
-const VERSION = "v3";
+const VERSION = "v4";
 const CACHE = `love-${VERSION}`;
 
 const CORE = [

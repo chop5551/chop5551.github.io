@@ -6,8 +6,11 @@
   <title>Для тебя</title>
   <meta name="description" content="Маленький секрет, сделанный с нежностью" />
   <meta name="color-scheme" content="light dark" />
-  <meta name="theme-color" content="#ffe3f1" media="(prefers-color-scheme: light)" />
-  <meta name="theme-color" content="#1c0f16" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#ffe3f1" id="themeColor" />
+  <script>
+    // Тема применяется до отрисовки, чтобы не было вспышки другой темы
+    try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "pink"; } catch { document.documentElement.dataset.theme = "pink"; }
+  </script>
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Для тебя" />
@@ -22,22 +25,48 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,600&display=swap&subset=cyrillic" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,600&family=Inter+Tight:wght@500;700;800;900&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&display=swap&subset=cyrillic" />
 
   <style>
     @layer tokens, base, components, motion;
 
     @layer tokens {
       :root {
-        color-scheme: light dark;
+        --radius-lg: 32px;
+        --radius-md: 22px;
+        --radius-sm: 16px;
+        --radius-btn: 999px;
 
-        --pink-500: #ff4f9e;
-        --pink-400: #ff78b6;
-        --pink-300: #ffa6cf;
-        --violet-500: #a855f7;
-        --fuchsia-500: #d946ef;
-        --peach-500: #ff8a5b;
+        --ease-out: cubic-bezier(.22, 1, .36, 1);
+        --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
 
+        --font-sans: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
+        --display-style: italic;
+        --display-weight: 700;
+        --display-transform: none;
+        --display-tracking: -.01em;
+        --btn-transform: none;
+        --btn-tracking: 0;
+
+        --shadow-sm: 0 6px 18px rgb(var(--glow) / .10);
+        --shadow-md: 0 14px 36px rgb(var(--glow) / .18);
+        --shadow-lg: 0 30px 90px rgb(var(--glow) / .22);
+        --ring: rgb(var(--glow) / .55);
+        --on-brand: #fff;
+        --title-grad: linear-gradient(120deg, var(--brand), var(--alt-2) 60%, var(--warm));
+        --bell-bg: radial-gradient(circle at 30% 30%, #fff, #ffe9f3 45%, #ffcce3 100%);
+      }
+
+      /* 💗 Розовая (по умолчанию) */
+      :root, [data-theme="pink"] {
+        color-scheme: light;
+        --glow: 255 79 158;
+        --brand: #ff4f9e;
+        --brand-2: #ff78b6;
+        --alt: #a855f7;
+        --alt-2: #d946ef;
+        --warm: #ff8a5b;
         --bg: #fff5fa;
         --bg-glow-1: #ffd9ec;
         --bg-glow-2: #ffe6d9;
@@ -48,41 +77,134 @@
         --text-muted: rgb(59 29 42 / .68);
         --accent: #e8338a;
         --border: rgb(255 120 182 / .28);
-        --ring: rgb(255 79 158 / .55);
         --toast-tint: rgb(255 233 243 / .55);
-
-        --shadow-sm: 0 6px 18px rgb(255 79 158 / .10);
-        --shadow-md: 0 14px 36px rgb(255 79 158 / .18);
-        --shadow-lg: 0 30px 90px rgb(255 79 158 / .22);
-
-        --radius-lg: 32px;
-        --radius-md: 22px;
-        --radius-sm: 16px;
-
-        --ease-out: cubic-bezier(.22, 1, .36, 1);
-        --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
-
-        --font-sans: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-        --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
+        --theme-color: #ffe3f1;
       }
 
-      @media (prefers-color-scheme: dark) {
-        :root {
-          --bg: #150a10;
-          --bg-glow-1: #4a1330;
-          --bg-glow-2: #3a1a14;
-          --bg-glow-3: #2d1545;
-          --surface: rgb(40 18 30 / .66);
-          --surface-strong: rgb(34 15 26 / .96);
-          --text: #ffe9f3;
-          --text-muted: rgb(255 233 243 / .66);
-          --accent: #ff7bbb;
-          --border: rgb(255 120 182 / .22);
-          --toast-tint: rgb(90 25 60 / .45);
-          --shadow-sm: 0 6px 18px rgb(0 0 0 / .30);
-          --shadow-md: 0 14px 36px rgb(0 0 0 / .40);
-          --shadow-lg: 0 30px 90px rgb(0 0 0 / .55);
-        }
+      /* 🤍 Белая */
+      [data-theme="light"] {
+        color-scheme: light;
+        --glow: 30 30 40;
+        --brand: #18181b;
+        --brand-2: #3f3f46;
+        --alt: #6366f1;
+        --alt-2: #8b5cf6;
+        --warm: #f97316;
+        --bg: #fafafa;
+        --bg-glow-1: #eef0f5;
+        --bg-glow-2: #f5efe9;
+        --bg-glow-3: #eceaf8;
+        --surface: rgb(255 255 255 / .78);
+        --surface-strong: rgb(255 255 255 / .97);
+        --text: #18181b;
+        --text-muted: rgb(24 24 27 / .62);
+        --accent: #4f46e5;
+        --border: rgb(24 24 27 / .10);
+        --toast-tint: rgb(238 240 245 / .7);
+        --title-grad: linear-gradient(120deg, #18181b, #4f46e5 70%, #8b5cf6);
+        --bell-bg: radial-gradient(circle at 30% 30%, #fff, #f4f4f5 50%, #e4e4e7 100%);
+        --shadow-sm: 0 6px 18px rgb(var(--glow) / .06);
+        --shadow-md: 0 14px 36px rgb(var(--glow) / .10);
+        --shadow-lg: 0 30px 90px rgb(var(--glow) / .12);
+        --theme-color: #fafafa;
+      }
+
+      /* 🖤 Тёмная */
+      [data-theme="dark"] {
+        color-scheme: dark;
+        --glow: 244 114 182;
+        --brand: #ec4899;
+        --brand-2: #f472b6;
+        --alt: #7c3aed;
+        --alt-2: #a855f7;
+        --warm: #fb923c;
+        --bg: #0c0b10;
+        --bg-glow-1: #2a1024;
+        --bg-glow-2: #1a1520;
+        --bg-glow-3: #1b1433;
+        --surface: rgb(26 24 32 / .70);
+        --surface-strong: rgb(22 20 28 / .97);
+        --text: #f4f4f5;
+        --text-muted: rgb(244 244 245 / .62);
+        --accent: #f472b6;
+        --border: rgb(255 255 255 / .09);
+        --toast-tint: rgb(60 20 50 / .45);
+        --bell-bg: radial-gradient(circle at 30% 30%, #3b3342, #25202c 55%, #19151f 100%);
+        --shadow-sm: 0 6px 18px rgb(0 0 0 / .35);
+        --shadow-md: 0 14px 36px rgb(0 0 0 / .45);
+        --shadow-lg: 0 30px 90px rgb(0 0 0 / .6);
+        --theme-color: #0c0b10;
+      }
+
+      /* 🐻 Канье: песочный минимализм, жирный гротеск капсом */
+      [data-theme="kanye"] {
+        color-scheme: light;
+        --glow: 40 32 24;
+        --brand: #1a1714;
+        --brand-2: #3a332c;
+        --alt: #8a7a66;
+        --alt-2: #6f604e;
+        --warm: #b5651d;
+        --bg: #d8cebf;
+        --bg-glow-1: #e9e1d4;
+        --bg-glow-2: #c7b8a2;
+        --bg-glow-3: #efe9df;
+        --surface: rgb(241 235 226 / .72);
+        --surface-strong: rgb(244 239 231 / .97);
+        --text: #1a1714;
+        --text-muted: rgb(26 23 20 / .6);
+        --accent: #1a1714;
+        --border: rgb(26 23 20 / .14);
+        --toast-tint: rgb(216 206 191 / .6);
+        --on-brand: #f1ebe2;
+        --title-grad: linear-gradient(#1a1714, #1a1714);
+        --bell-bg: radial-gradient(circle at 30% 30%, #f6f1e9, #e3d9ca 60%, #cfc2ae 100%);
+        --font-sans: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
+        --font-display: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
+        --display-style: normal;
+        --display-weight: 900;
+        --display-transform: uppercase;
+        --display-tracking: -.035em;
+        --btn-transform: uppercase;
+        --btn-tracking: .08em;
+        --radius-lg: 6px;
+        --radius-md: 4px;
+        --radius-sm: 4px;
+        --radius-btn: 4px;
+        --shadow-sm: 0 4px 14px rgb(var(--glow) / .08);
+        --shadow-md: 0 10px 30px rgb(var(--glow) / .12);
+        --shadow-lg: 0 24px 70px rgb(var(--glow) / .16);
+        --theme-color: #d8cebf;
+      }
+
+      /* 🍎 Сумерки: туманный лес Форкса, кроваво-красный и янтарные глаза Эдварда */
+      [data-theme="twilight"] {
+        color-scheme: dark;
+        --glow: 200 30 55;
+        --brand: #9e1b32;
+        --brand-2: #c02942;
+        --alt: #34555c;
+        --alt-2: #4f7a80;
+        --warm: #c9a063;
+        --bg: #0a1113;
+        --bg-glow-1: #173232;
+        --bg-glow-2: #2a0c12;
+        --bg-glow-3: #1e2733;
+        --surface: rgb(16 26 29 / .66);
+        --surface-strong: rgb(14 22 25 / .97);
+        --text: #e3e9ea;
+        --text-muted: rgb(227 233 234 / .6);
+        --accent: #d8435b;
+        --border: rgb(180 210 215 / .12);
+        --toast-tint: rgb(60 12 22 / .45);
+        --title-grad: linear-gradient(120deg, #e3e9ea, #c9a063 55%, #d8435b);
+        --bell-bg: radial-gradient(circle at 30% 30%, #2b3a3d, #1a2528 55%, #0f171a 100%);
+        --font-display: "Cormorant Garamond", Georgia, serif;
+        --display-weight: 600;
+        --shadow-sm: 0 6px 18px rgb(0 0 0 / .4);
+        --shadow-md: 0 14px 36px rgb(0 0 0 / .5);
+        --shadow-lg: 0 30px 90px rgb(0 0 0 / .65);
+        --theme-color: #0a1113;
       }
     }
 
@@ -186,12 +308,14 @@
       h1 {
         margin: 0 0 12px;
         font-family: var(--font-display);
-        font-weight: 700;
+        font-style: normal;
+        text-transform: var(--display-transform);
+        font-weight: var(--display-weight);
         font-size: clamp(30px, 6vw, 46px);
         line-height: 1.05;
-        letter-spacing: -.01em;
+        letter-spacing: var(--display-tracking);
         text-wrap: balance;
-        background: linear-gradient(120deg, var(--pink-500), var(--fuchsia-500) 60%, var(--peach-500));
+        background: var(--title-grad);
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
@@ -219,8 +343,8 @@
         cursor: pointer;
         display: grid;
         place-items: center;
-        background: radial-gradient(circle at 30% 30%, #fff, #ffe9f3 45%, #ffcce3 100%);
-        box-shadow: 0 12px 30px rgb(255 79 158 / .30), inset 0 2px 10px rgb(255 255 255 / .9);
+        background: var(--bell-bg);
+        box-shadow: 0 12px 30px rgb(var(--glow) / .30), inset 0 2px 10px rgb(255 255 255 / .25);
         transition: transform .3s var(--ease-spring), box-shadow .3s var(--ease-out);
       }
 
@@ -232,7 +356,7 @@
         position: absolute;
         inset: -7px;
         border-radius: 50%;
-        border: 2px solid rgb(255 79 158 / .3);
+        border: 2px solid rgb(var(--glow) / .3);
         opacity: 0;
       }
 
@@ -257,16 +381,125 @@
         border-radius: 999px;
         display: grid;
         place-items: center;
-        background: linear-gradient(135deg, #ff2f74, #ff6a9d);
-        color: #fff;
+        background: linear-gradient(135deg, var(--brand), var(--brand-2));
+        color: var(--on-brand);
         font-size: 13px;
         font-weight: 800;
-        box-shadow: 0 8px 16px rgb(255 47 116 / .35);
-        border: 2px solid #fff7fb;
+        box-shadow: 0 8px 16px rgb(var(--glow) / .35);
+        border: 2px solid var(--surface-strong);
         transition: opacity .3s var(--ease-out), scale .3s var(--ease-spring);
       }
 
       .notify-btn:not([data-ringing]) .badge { opacity: 0; scale: .4; }
+
+      /* ---------- Переключатель тем ---------- */
+      .theme-btn {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        z-index: 5;
+        width: 48px;
+        height: 48px;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--border);
+        border-radius: 50%;
+        background: var(--bell-bg);
+        box-shadow: var(--shadow-sm);
+        cursor: pointer;
+        transition: transform .3s var(--ease-spring);
+      }
+
+      .theme-btn:hover { transform: rotate(-12deg) scale(1.05); }
+      .theme-btn:active { transform: scale(.94); }
+
+      .theme-btn .swatch { width: 24px; height: 24px; }
+
+      .swatch {
+        flex: none;
+        border-radius: 50%;
+        box-shadow: inset 0 0 0 1px rgb(0 0 0 / .12), 0 2px 6px rgb(0 0 0 / .12);
+      }
+
+      .swatch[data-for="pink"]     { background: conic-gradient(#ff4f9e 0 33%, #d946ef 0 66%, #ffd9ec 0); }
+      .swatch[data-for="light"]    { background: conic-gradient(#ffffff 0 50%, #18181b 0 75%, #6366f1 0); }
+      .swatch[data-for="dark"]     { background: conic-gradient(#0c0b10 0 50%, #2a2733 0 75%, #ec4899 0); }
+      .swatch[data-for="kanye"]    { background: conic-gradient(#d8cebf 0 45%, #1a1714 0 75%, #b5651d 0); }
+      .swatch[data-for="twilight"] { background: conic-gradient(#0a1113 0 40%, #34555c 0 65%, #9e1b32 0 88%, #c9a063 0); }
+
+      .theme-menu {
+        position: fixed;
+        inset: auto;
+        margin: 0;
+        width: min(270px, calc(100vw - 32px));
+        padding: 8px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        /* непрозрачные цвета: меню лежит поверх всего, просвечивать ничего не должно */
+        --menu-muted: color-mix(in srgb, var(--text) 62%, var(--bg));
+        --menu-line: color-mix(in srgb, var(--text) 22%, var(--bg));
+        background: linear-gradient(var(--surface-strong), var(--surface-strong)), var(--bg);
+        color: var(--text);
+        box-shadow: var(--shadow-lg);
+        opacity: 0;
+        translate: 0 -6px;
+        scale: .97;
+        transform-origin: top left;
+        transition: opacity .2s var(--ease-out), translate .3s var(--ease-out), scale .3s var(--ease-out),
+                    overlay .2s allow-discrete, display .2s allow-discrete;
+      }
+
+      .theme-menu:popover-open { opacity: 1; translate: 0 0; scale: 1; }
+
+      @starting-style {
+        .theme-menu:popover-open { opacity: 0; translate: 0 -6px; scale: .97; }
+      }
+
+      .theme-menu-title {
+        margin: 6px 10px 8px;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: .16em;
+        text-transform: uppercase;
+        color: var(--menu-muted);
+      }
+
+      .theme-option {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        padding: 10px;
+        border: 0;
+        border-radius: calc(var(--radius-md) - 6px);
+        background: transparent;
+        text-align: left;
+        cursor: pointer;
+        transition: background .15s;
+      }
+
+      .theme-option:hover { background: color-mix(in srgb, var(--brand) 8%, var(--bg)); }
+      .theme-option .swatch { width: 30px; height: 30px; }
+      .theme-option-text { display: grid; gap: 1px; flex: 1; }
+      .theme-option-name { font-weight: 700; font-size: 15px; }
+      .theme-option-desc { font-size: 12px; color: var(--menu-muted); }
+
+      .theme-option::after {
+        content: "";
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 2px solid var(--menu-line);
+      }
+
+      .theme-option[aria-checked="true"]::after {
+        border-color: var(--brand);
+        background: radial-gradient(circle, var(--brand) 0 4px, transparent 5px);
+      }
+
+      html.theme-switching::view-transition-old(root),
+      html.theme-switching::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+      html.theme-switching::view-transition-new(root) { z-index: 1; }
 
       /* ---------- Любовное уведомление ---------- */
       .love-toast {
@@ -298,15 +531,16 @@
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        background: var(--pink-500);
-        box-shadow: 0 0 0 6px rgb(255 79 158 / .15);
+        background: var(--brand);
+        box-shadow: 0 0 0 6px rgb(var(--glow) / .15);
         animation: dotPulse 1.8s ease-in-out infinite;
       }
 
       .love-text {
         margin: 0;
         font-family: var(--font-display);
-        font-style: italic;
+        font-style: var(--display-style);
+        text-transform: var(--display-transform);
         font-weight: 600;
         font-size: clamp(20px, 3.4vw, 26px);
         line-height: 1.35;
@@ -340,11 +574,13 @@
         min-height: 54px;
         padding: 14px 22px;
         border: 1px solid transparent;
-        border-radius: 999px;
+        border-radius: var(--radius-btn);
         background: var(--btn-bg);
         color: var(--btn-fg);
         font-weight: 700;
         font-size: 16px;
+        text-transform: var(--btn-transform);
+        letter-spacing: var(--btn-tracking);
         cursor: pointer;
         box-shadow: var(--btn-shadow);
         overflow: hidden;
@@ -376,23 +612,23 @@
       .btn--wide { grid-column: 1 / -1; }
 
       .btn--primary {
-        --btn-bg: linear-gradient(135deg, var(--pink-500), var(--pink-400));
-        --btn-fg: #fff;
-        --btn-shadow: 0 12px 30px rgb(255 79 158 / .38);
+        --btn-bg: linear-gradient(135deg, var(--brand), var(--brand-2));
+        --btn-fg: var(--on-brand);
+        --btn-shadow: 0 12px 30px rgb(var(--glow) / .38);
       }
 
       .btn--ghost { border-color: var(--border); }
 
       .btn--violet {
-        --btn-bg: linear-gradient(135deg, var(--violet-500), var(--fuchsia-500));
+        --btn-bg: linear-gradient(135deg, var(--alt), var(--alt-2));
         --btn-fg: #fff;
-        --btn-shadow: 0 12px 30px rgb(217 70 239 / .34);
+        --btn-shadow: 0 12px 30px rgb(var(--glow) / .30);
       }
 
       .btn--sunset {
-        --btn-bg: linear-gradient(135deg, var(--peach-500), var(--pink-500));
+        --btn-bg: linear-gradient(135deg, var(--warm), var(--brand));
         --btn-fg: #fff;
-        --btn-shadow: 0 12px 30px rgb(255 110 120 / .32);
+        --btn-shadow: 0 12px 30px rgb(var(--glow) / .30);
       }
 
       /* ---------- Экран с фото ---------- */
@@ -403,7 +639,8 @@
         min-height: 1.3em;
         text-align: center;
         font-family: var(--font-display);
-        font-style: italic;
+        font-style: var(--display-style);
+        text-transform: var(--display-transform);
         font-weight: 600;
         font-size: clamp(24px, 4.4vw, 36px);
         line-height: 1.2;
@@ -422,7 +659,7 @@
         border: 1px solid var(--border);
         border-radius: var(--radius-md);
         background:
-          radial-gradient(closest-side, rgb(255 79 158 / .08), transparent),
+          radial-gradient(closest-side, rgb(var(--glow) / .08), transparent),
           var(--surface-strong);
         box-shadow: var(--shadow-md);
         overflow: hidden;
@@ -541,12 +778,14 @@
       .modal-title {
         margin: 0;
         font-family: var(--font-display);
+        font-style: normal;
+        text-transform: var(--display-transform);
         font-size: clamp(26px, 4vw, 34px);
         line-height: 1.1;
         color: var(--accent);
       }
 
-      .modal-title--violet { color: var(--fuchsia-500); }
+      .modal-title--violet { color: var(--alt-2); }
 
       .modal-subtitle {
         margin: 8px 0 0;
@@ -601,10 +840,10 @@
       }
 
       .weekday-btn[aria-pressed="true"] {
-        background: linear-gradient(135deg, var(--pink-500), var(--pink-400));
-        color: #fff;
+        background: linear-gradient(135deg, var(--brand), var(--brand-2));
+        color: var(--on-brand);
         border-color: transparent;
-        box-shadow: 0 10px 24px rgb(255 79 158 / .3);
+        box-shadow: 0 10px 24px rgb(var(--glow) / .3);
       }
 
       .today-tag {
@@ -619,8 +858,8 @@
         letter-spacing: .08em;
         padding: 3px 8px;
         border-radius: 999px;
-        background: var(--pink-500);
-        color: #fff;
+        background: var(--brand);
+        color: var(--on-brand);
       }
 
       .preview {
@@ -632,7 +871,7 @@
         border-radius: var(--radius-md);
         border: 1px solid var(--border);
         background:
-          radial-gradient(700px 260px at 50% 0%, rgb(255 79 158 / .10), transparent 60%),
+          radial-gradient(700px 260px at 50% 0%, rgb(var(--glow) / .10), transparent 60%),
           var(--surface);
         text-align: center;
       }
@@ -640,6 +879,8 @@
       .preview-title {
         margin: 0;
         font-family: var(--font-display);
+        font-style: normal;
+        text-transform: var(--display-transform);
         font-size: clamp(22px, 3vw, 28px);
         color: var(--accent);
         text-transform: capitalize;
@@ -683,6 +924,8 @@
       .dessert-name {
         margin: 0;
         font-family: var(--font-display);
+        font-style: normal;
+        text-transform: var(--display-transform);
         font-size: clamp(22px, 3.4vw, 28px);
         line-height: 1.2;
         text-wrap: balance;
@@ -694,7 +937,7 @@
         justify-content: center;
         gap: 10px;
         font-weight: 700;
-        color: var(--fuchsia-500);
+        color: var(--alt-2);
       }
 
       .dessert-meta span + span::before { content: "·"; margin-right: 10px; color: var(--text-muted); }
@@ -741,6 +984,7 @@
       @media (max-width: 520px) {
         .actions { grid-template-columns: 1fr; }
         .notify-btn { width: 54px; height: 54px; top: 12px; right: 12px; }
+        .theme-btn { width: 46px; height: 46px; top: 16px; left: 12px; }
         .top { padding-inline: 20px; padding-top: 72px; }
         .photo-frame { height: min(50dvh, 520px); }
         dialog { max-height: 92dvh; }
@@ -778,7 +1022,7 @@
         80%, 100% { opacity: 0; transform: scale(1.35); }
       }
       @keyframes dotPulse {
-        50% { box-shadow: 0 0 0 10px rgb(255 79 158 / 0); }
+        50% { box-shadow: 0 0 0 10px rgb(var(--glow) / 0); }
       }
       @keyframes float {
         50% { transform: translateY(-3px); }
@@ -806,13 +1050,17 @@
   <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
     <defs>
       <linearGradient id="bellGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#ff4f9e" />
-        <stop offset="100%" stop-color="#d946ef" />
+        <stop offset="0%" style="stop-color: var(--brand)" />
+        <stop offset="100%" style="stop-color: var(--alt-2)" />
       </linearGradient>
     </defs>
   </svg>
 
   <main class="card">
+    <button class="theme-btn" id="themeBtn" type="button" popovertarget="themeMenu" aria-label="Выбрать тему" aria-haspopup="menu">
+      <span class="swatch" id="themeBtnSwatch" data-for="pink" aria-hidden="true"></span>
+    </button>
+
     <button class="notify-btn" id="notifyBell" type="button" aria-label="Открыть уведомление" aria-controls="loveToast" aria-expanded="false" data-ringing>
       <svg class="bell-icon" viewBox="0 0 24 24" aria-hidden="true">
         <path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm7-5h-1V11a6 6 0 1 0-12 0v6H5a1 1 0 1 0 0 2h14a1 1 0 1 0 0-2Zm-3 0H8V11a4 4 0 1 1 8 0v6Z"/>
@@ -856,6 +1104,11 @@
 
     <footer class="footer">Сделано с <span>нежностью</span></footer>
   </main>
+
+  <div class="theme-menu" id="themeMenu" popover role="menu" aria-label="Темы оформления">
+    <p class="theme-menu-title">Тема</p>
+    <div id="themeOptions"></div>
+  </div>
 
   <dialog id="calendarModal" aria-labelledby="calendarTitle" closedby="any">
     <div class="modal-head">
@@ -978,6 +1231,78 @@
       return document.startViewTransition(update).finished;
     }
 
+    /* ---------- Темы ---------- */
+    const THEMES = {
+      pink:     { name: "Розовая",  desc: "нежная, как всегда" },
+      light:    { name: "Белая",    desc: "чисто и светло" },
+      dark:     { name: "Тёмная",   desc: "для ночных секретов" },
+      kanye:    { name: "Канье",    desc: "песок, капс, минимализм" },
+      twilight: { name: "Сумерки",  desc: "туман Форкса и Эдвард" },
+    };
+    const root = document.documentElement;
+    const themeMenu = $("#themeMenu");
+    const themeBtn = $("#themeBtn");
+
+    $("#themeOptions").append(...Object.entries(THEMES).map(([id, t]) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "theme-option";
+      btn.role = "menuitemradio";
+      btn.dataset.theme = id;
+      btn.innerHTML = `<span class="swatch" data-for="${id}" aria-hidden="true"></span>
+        <span class="theme-option-text"><span class="theme-option-name"></span><span class="theme-option-desc"></span></span>`;
+      btn.querySelector(".theme-option-name").textContent = t.name;
+      btn.querySelector(".theme-option-desc").textContent = t.desc;
+      return btn;
+    }));
+
+    function syncThemeUi() {
+      const current = THEMES[root.dataset.theme] ? root.dataset.theme : "pink";
+      root.dataset.theme = current;
+      $("#themeBtnSwatch").dataset.for = current;
+      themeBtn.title = `Тема: ${THEMES[current].name}`;
+      for (const o of $("#themeOptions").children) o.setAttribute("aria-checked", String(o.dataset.theme === current));
+      $("#themeColor").content = getComputedStyle(root).getPropertyValue("--theme-color").trim();
+    }
+
+    function setTheme(id, x, y) {
+      if (id === root.dataset.theme) return;
+      const apply = () => { root.dataset.theme = id; storage.set("theme", id); syncThemeUi(); };
+      if (!document.startViewTransition || reducedMotion.matches) return apply();
+
+      // Новая тема «разливается» кругом от места нажатия
+      root.classList.add("theme-switching");
+      const vt = document.startViewTransition(apply);
+      const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+      vt.ready.then(() => root.animate(
+        { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`] },
+        { duration: 650, easing: "cubic-bezier(.22, 1, .36, 1)", pseudoElement: "::view-transition-new(root)" }
+      )).catch(() => {});
+      vt.finished.finally(() => root.classList.remove("theme-switching"));
+    }
+
+    $("#themeOptions").addEventListener("click", e => {
+      const opt = e.target.closest(".theme-option");
+      if (!opt) return;
+      haptic();
+      themeMenu.hidePopover?.();
+      const b = themeBtn.getBoundingClientRect();
+      setTheme(opt.dataset.theme, b.left + b.width / 2, b.top + b.height / 2);
+    });
+
+    themeMenu.addEventListener("beforetoggle", e => {
+      if (e.newState !== "open") return;
+      const b = themeBtn.getBoundingClientRect();
+      themeMenu.style.top = `${b.bottom + 10}px`;
+      themeMenu.style.left = `${Math.max(16, b.left)}px`;
+    });
+
+    themeMenu.addEventListener("toggle", e => {
+      if (e.newState === "open") themeMenu.querySelector('[aria-checked="true"]')?.focus();
+    });
+
+    syncThemeUi();
+
     /* ---------- Уведомление ---------- */
     const bell = $("#notifyBell");
     const toast = $("#loveToast");
@@ -1065,7 +1390,7 @@
 
     // Клавиатура: → / пробел — следующее, Esc — назад
     document.addEventListener("keydown", e => {
-      if (screen.hidden || document.querySelector("dialog[open]")) return;
+      if (screen.hidden || document.querySelector("dialog[open], .theme-menu:popover-open")) return;
       if (e.key === "ArrowRight") { e.preventDefault(); showNext(); }
       if (e.key === "Escape") goHome();
     });
